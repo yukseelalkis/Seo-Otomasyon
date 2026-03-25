@@ -1,6 +1,8 @@
 const STATIONERY_CATEGORIES = new Set([
   "versatil kalem",
   "versatil kalemler",
+  "versatil",
+  "versati",
   "kurşun kalem",
   "kursun kalem",
   "kalem ucu",
@@ -20,7 +22,13 @@ const STATIONERY_CATEGORIES = new Set([
   "okul gereçleri",
   "okul gerecleri",
   "defter & kağıt",
-  "defter ve kitap kapları"
+  "defter ve kitap kapları",
+  "resim defteri",
+  "fırça uçlu kalem",
+  "firca uclu kalem",
+  "sticker - etiket",
+  "etiket",
+  "makas"
 ]);
 
 const BOOK_CATEGORIES = new Set([
@@ -60,6 +68,75 @@ const TECH_CATEGORIES = new Set([
   "powerbank"
 ]);
 
+const ART_CATEGORIES = new Set([
+  "sanatsal",
+  "akrilik boya",
+  "akrilik boya fırçaları",
+  "akrilik boya fircalari",
+  "fırça",
+  "firca",
+  "boya fırçası",
+  "boya fircasi",
+  "parmak boya",
+  "sulu boya",
+  "suluboya",
+  "guaj boya",
+  "resim malzemeleri",
+  "pastel boya",
+  "kuruboya"
+]);
+
+const PRESCHOOL_BAG_CATEGORIES = new Set([
+  "anaokul çantası",
+  "anaokul cantasi",
+  "anaokulu çantası",
+  "anaokulu cantasi",
+  "anaokul sırt çantası",
+  "anaokul sirt cantasi",
+  "okul öncesi çanta",
+  "okul oncesi canta",
+  "okul öncesi sırt çantası",
+  "kreş çantası",
+  "kres cantasi",
+  "okul öncesi"
+]);
+
+const BAG_CATEGORIES = new Set([
+  "çanta ve matara",
+  "canta ve matara",
+  "sırt çantası",
+  "sirt cantasi",
+  "beslenme çantası",
+  "beslenme cantasi",
+  "matara",
+  "kalem kutusu"
+]);
+
+const OFFICE_CATEGORIES = new Set([
+  "ofis",
+  "masa üstü",
+  "masa ustu",
+  "telli dosya",
+  "dosya",
+  "klasör",
+  "klasor",
+  "yapıştırıcı",
+  "yapistirici",
+  "bant"
+]);
+
+const KIDS_CATEGORIES = new Set([
+  "lisanslı ürünler",
+  "lisansli urunler",
+  "çocuk kitapları",
+  "cocuk kitaplari",
+  "çocuk - okul öncesi",
+  "cocuk - okul oncesi",
+  "çocuk - okul çağı",
+  "cocuk - okul cagi",
+  "oyun hamuru"
+]);
+
 function normalizeCategory(value) {
   return String(value || "").toLocaleLowerCase("tr-TR").trim();
 }
@@ -72,8 +149,21 @@ function matchSet(category, setValues) {
   return false;
 }
 
-function getCategoryStrategy(rawCategory) {
-  const category = normalizeCategory(rawCategory);
+function getCategorySearchText(rawProduct) {
+  if (typeof rawProduct === "string") {
+    return normalizeCategory(rawProduct);
+  }
+
+  const category = rawProduct?.Kategori || rawProduct?.kategori || rawProduct?.category || "";
+  const mainCategory = rawProduct?.mainCategory || "";
+  const subCategory = rawProduct?.subCategory || "";
+  const label = rawProduct?.UrunAdi || rawProduct?.urunAdi || rawProduct?.label || rawProduct?.name || "";
+
+  return normalizeCategory([mainCategory, category, subCategory, label].filter(Boolean).join(" | "));
+}
+
+function getCategoryStrategy(rawProduct) {
+  const category = getCategorySearchText(rawProduct);
 
   if (matchSet(category, BOOK_CATEGORIES)) {
     return { key: "book", mode: "hybrid", aiRecommended: true };
@@ -87,8 +177,28 @@ function getCategoryStrategy(rawCategory) {
     return { key: "tech", mode: "hybrid", aiRecommended: true };
   }
 
+  if (matchSet(category, ART_CATEGORIES)) {
+    return { key: "art", mode: "hybrid", aiRecommended: true };
+  }
+
+  if (matchSet(category, PRESCHOOL_BAG_CATEGORIES)) {
+    return { key: "preschool-bag", mode: "hybrid", aiRecommended: true };
+  }
+
+  if (matchSet(category, BAG_CATEGORIES)) {
+    return { key: "bag", mode: "hybrid", aiRecommended: true };
+  }
+
+  if (matchSet(category, OFFICE_CATEGORIES)) {
+    return { key: "office", mode: "template-first", aiRecommended: false };
+  }
+
+  if (matchSet(category, KIDS_CATEGORIES)) {
+    return { key: "kids", mode: "hybrid", aiRecommended: false };
+  }
+
   if (matchSet(category, STATIONERY_CATEGORIES)) {
-    return { key: "stationery", mode: "template-first", aiRecommended: false };
+    return { key: "stationery", mode: "hybrid", aiRecommended: true };
   }
 
   return { key: "generic", mode: "template-first", aiRecommended: false };
@@ -96,5 +206,6 @@ function getCategoryStrategy(rawCategory) {
 
 module.exports = {
   getCategoryStrategy,
-  normalizeCategory
+  normalizeCategory,
+  getCategorySearchText
 };

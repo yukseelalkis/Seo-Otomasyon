@@ -16,7 +16,8 @@ function buildSeoTitle(title) {
 }
 
 function buildMetaDescription(facts) {
-  const base = `${facts.title} MaviKalem'de. ${facts.category} kategorisinde orijinal ürün, uygun fiyat ve hızlı kargo avantajıyla şimdi inceleyin.`;
+  const categoryPhrase = facts.subCategory || facts.category;
+  const base = `${facts.title} MaviKalem'de. ${categoryPhrase} kategorisinde orijinal ürün, uygun fiyat ve hızlı kargo avantajıyla şimdi inceleyin.`;
   const min = seoRules.minMetaDescriptionLength;
   const max = seoRules.maxMetaDescriptionLength;
 
@@ -28,14 +29,26 @@ function buildMetaDescription(facts) {
 }
 
 function buildMetaKeywords(facts) {
+  const categoryPhrase = facts.subCategory || facts.category;
+  const contextKeywords = [];
+
+  if (facts.brushType) contextKeywords.push(`${facts.brushType} fırça`);
+  if (facts.material) contextKeywords.push(facts.material);
+  if (facts.medium) contextKeywords.push(facts.medium);
+  if (facts.usageType) contextKeywords.push(facts.usageType);
+  if (facts.lesson) contextKeywords.push(`${facts.lesson} kitabı`);
+  if (facts.examType) contextKeywords.push(`${facts.examType} hazırlık`);
+  if (facts.classLevel) contextKeywords.push(facts.classLevel);
+  if (facts.leadSize && /kalem/i.test(categoryPhrase)) contextKeywords.push(`${facts.leadSize} kalem`);
+  if (facts.color !== "Standart") contextKeywords.push(`${facts.color} ${categoryPhrase}`);
+
   const keywords = [
     facts.title,
-    facts.category,
-    `${facts.brand} ${facts.category}`,
-    `${facts.leadSize} kalem`,
-    `${facts.color} ${facts.category}`,
+    categoryPhrase,
+    `${facts.brand} ${categoryPhrase}`,
+    ...contextKeywords,
     "MaviKalem",
-    "kırtasiye"
+    facts.mainCategory || "kırtasiye"
   ]
     .map((item) => normalizeSpace(item))
     .filter(Boolean);
@@ -43,7 +56,7 @@ function buildMetaKeywords(facts) {
   return [...new Set(keywords)].join(", ");
 }
 
-function buildSeoChecklist(title, keyword, description) {
+function buildSeoChecklist(title, keyword, description, rules = seoRules) {
   const wordCount = countWords(description);
   const density = calcDensityPercent(description, keyword);
 
@@ -54,12 +67,12 @@ function buildSeoChecklist(title, keyword, description) {
     { rule: "Ürün açıklama alanı boş bırakılamaz.", passed: Boolean(normalizeSpace(description)) },
     { rule: "Hedef kelime Ürün açıklaması içerisinde geçiyor.", passed: containsKeyword(description, keyword) },
     {
-      rule: `Ürün açıklama alanı en az ${seoRules.minDescriptionWords} kelime içermelidir. Kelime Sayısı: ${wordCount}`,
-      passed: wordCount >= seoRules.minDescriptionWords
+      rule: `Ürün açıklama alanı en az ${rules.minDescriptionWords} kelime içermelidir. Kelime Sayısı: ${wordCount}`,
+      passed: wordCount >= rules.minDescriptionWords
     },
     {
       rule: `Hedef kelime, Ürün açıklamasında %${density.toFixed(2)} oranında geçmektedir.`,
-      passed: density >= seoRules.minKeywordDensity && density <= seoRules.maxKeywordDensity
+      passed: density >= rules.minKeywordDensity && density <= rules.maxKeywordDensity
     }
   ];
 }

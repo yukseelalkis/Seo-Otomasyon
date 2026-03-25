@@ -1,7 +1,7 @@
 const { pickVariant } = require("../lib/textUtils");
 
 function buildStationeryDescription(facts) {
-  const seed = `${facts.stockCode}-${facts.title}`;
+  const seed = facts.variationSeed || `${facts.stockCode}-${facts.title}`;
 
   const intro = [
     `${facts.title}, günlük not alma temposunda akıcı yazım arayan kullanıcılar için hazırlanmış dengeli bir ${facts.category.toLocaleLowerCase("tr-TR")} modelidir.`,

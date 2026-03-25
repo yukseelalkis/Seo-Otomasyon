@@ -1,0 +1,1 @@
+$env:TARGET_CATEGORY="Anaokul Çantası"; $env:OUTPUT_FILE="ozellik_anaokul_cantalari.json"; $env:FEATURE_MODE="auto"; node src/scripts/collect-features.js

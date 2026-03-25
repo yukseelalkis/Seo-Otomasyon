@@ -1,4 +1,4 @@
-const { main } = require("./index");
+const { main } = require("../index");
 
 main().catch((error) => {
   console.error("Hata:", error.message);

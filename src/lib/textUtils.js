@@ -10,6 +10,16 @@ function stripHtml(html) {
   return normalizeSpace(String(html || "").replace(/<[^>]+>/g, " "));
 }
 
+function normalizeTurkishForMatch(text) {
+  return toLowerTr(text)
+    .replace(/ı/g, "i")
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c");
+}
+
 function countWords(text) {
   return normalizeSpace(text).split(/\s+/).filter(Boolean).length;
 }
@@ -66,6 +76,7 @@ module.exports = {
   normalizeSpace,
   toLowerTr,
   stripHtml,
+  normalizeTurkishForMatch,
   countWords,
   countKeywordOccurrences,
   calcDensityPercent,

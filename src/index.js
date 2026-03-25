@@ -3,29 +3,102 @@ const fs = require("fs");
 const path = require("path");
 
 const seoRules = require("./config/seoRules");
-const { getCategoryStrategy, normalizeCategory } = require("./config/categories");
+const { getCategoryStrategy, normalizeCategory, getCategorySearchText } = require("./config/categories");
 const { extractProductFacts } = require("./lib/productFacts");
 const { buildSeoTitle, buildMetaDescription, buildMetaKeywords, buildSeoChecklist } = require("./lib/seo");
-const { getHighestSimilarity } = require("./lib/similarity");
+const { getMostSimilarMatch } = require("./lib/similarity");
 const { generateHtmlDescription, isGeminiEnabled } = require("./lib/geminiClient");
-const { stripHtml, countWords, normalizeSpace, sleep } = require("./lib/textUtils");
+const { stripHtml, countWords, countKeywordOccurrences, calcDensityPercent, normalizeSpace, sleep } = require("./lib/textUtils");
 
 const { buildStationeryDescription } = require("./generators/stationeryTemplate");
 const { buildBookDescription } = require("./generators/bookTemplate");
 const { buildSetDescription } = require("./generators/setTemplate");
 const { buildTechDescription } = require("./generators/techTemplate");
+const { buildArtDescription } = require("./generators/artTemplate");
+const { buildBagDescription } = require("./generators/bagTemplate");
+const { buildPreschoolBagDescription } = require("./generators/preschoolBagTemplate");
+const { buildOfficeDescription } = require("./generators/officeTemplate");
+const { buildKidsDescription } = require("./generators/kidsTemplate");
 const { buildGenericDescription } = require("./generators/genericTemplate");
 
 const INPUT_FILE = path.join(__dirname, "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
-const OUTPUT_FILE = path.join(__dirname, "..", "data", "output", process.env.OUTPUT_FILE || "urunler_aciklamali.json");
+const OUTPUT_FILE = path.join(__dirname, "..", "data", "output", process.env.OUTPUT_FILE || "cikti.json");
+const FEATURE_INPUT_FILE = process.env.FEATURE_INPUT_FILE
+  ? path.join(__dirname, "..", "data", "output", process.env.FEATURE_INPUT_FILE)
+  : "";
 const TARGET_CATEGORY = normalizeCategory(process.env.TARGET_CATEGORY || "");
+const APPROVED_FEATURE_STATUS = normalizeCategory(process.env.APPROVED_FEATURE_STATUS || "onaylandi");
 const API_DELAY_MS = Number(process.env.API_DELAY_MS || 1200);
+const MAX_TEMPLATE_VARIATIONS = Number(process.env.MAX_TEMPLATE_VARIATIONS || 3);
 
-function shouldIncludeByCategory(rawCategory) {
+function shouldIncludeByCategory(product) {
   if (!TARGET_CATEGORY) return true;
-  const category = normalizeCategory(rawCategory);
+  const category = normalizeCategory(getCategorySearchText(product));
   if (category === TARGET_CATEGORY) return true;
-  return category === `${TARGET_CATEGORY}ler`;
+  return category.includes(TARGET_CATEGORY) || category === `${TARGET_CATEGORY}ler`;
+}
+
+function getFeatureLookupKeys(record) {
+  const stockCode = normalizeSpace(record.stockCode || record.StokKodu || "");
+  const title = normalizeSpace(record.title || record.UrunAdi || "");
+  const keys = [];
+
+  if (stockCode) keys.push(`stock:${stockCode}`);
+  if (title) keys.push(`title:${normalizeCategory(title)}`);
+  return keys;
+}
+
+function loadApprovedFeatureRecords() {
+  if (!FEATURE_INPUT_FILE) {
+    return { featureMap: new Map(), approvedCount: 0 };
+  }
+
+  if (!fs.existsSync(FEATURE_INPUT_FILE)) {
+    throw new Error(`Özellik dosyası bulunamadı: ${FEATURE_INPUT_FILE}`);
+  }
+
+  const raw = fs.readFileSync(FEATURE_INPUT_FILE, "utf8");
+  const records = JSON.parse(raw);
+  if (!Array.isArray(records)) {
+    throw new Error("Özellik dosyası dizi (array) formatında olmalıdır.");
+  }
+
+  const approved = records.filter((record) => {
+    if (!APPROVED_FEATURE_STATUS) return true;
+    return normalizeCategory(record.Durum || "") === APPROVED_FEATURE_STATUS;
+  });
+
+  const featureMap = new Map();
+  for (const record of approved) {
+    for (const key of getFeatureLookupKeys(record)) {
+      featureMap.set(key, record);
+    }
+  }
+
+  return {
+    featureMap,
+    approvedCount: approved.length
+  };
+}
+
+function getApprovedFeatureRecord(product, facts, featureMap) {
+  for (const key of [...getFeatureLookupKeys(facts), ...getFeatureLookupKeys(product)]) {
+    const record = featureMap.get(key);
+    if (record) return record;
+  }
+  return null;
+}
+
+function mergeApprovedFeatures(facts, featureRecord) {
+  const approvedFeatures = featureRecord?.Ozellikler;
+  if (!approvedFeatures || typeof approvedFeatures !== "object") {
+    return facts;
+  }
+
+  return {
+    ...facts,
+    ...approvedFeatures
+  };
 }
 
 function getTemplateDescription(strategyKey, facts) {
@@ -38,28 +111,39 @@ function getTemplateDescription(strategyKey, facts) {
       return buildSetDescription(facts);
     case "tech":
       return buildTechDescription(facts);
+    case "art":
+      return buildArtDescription(facts);
+    case "preschool-bag":
+      return buildPreschoolBagDescription(facts);
+    case "bag":
+      return buildBagDescription(facts);
+    case "office":
+      return buildOfficeDescription(facts);
+    case "kids":
+      return buildKidsDescription(facts);
     default:
       return buildGenericDescription(facts);
   }
 }
 
-function validateDescription(description, facts, existingDescriptions) {
+function validateDescription(description, facts, existingDescriptions, strategyRules) {
   const plainText = stripHtml(description);
-  const seoChecklist = buildSeoChecklist(facts.title, facts.keyword, plainText);
-  const highestSimilarity = getHighestSimilarity(description, existingDescriptions);
-  const looksLikeHtml = /<h2>.*<\/h2>/i.test(description) && /<ul>.*<\/ul>/i.test(description);
+  const seoChecklist = buildSeoChecklist(facts.title, facts.keyword, plainText, strategyRules);
+  const { highestSimilarity } = getMostSimilarMatch(description, existingDescriptions);
+  const hasSpecBlock = /<ul>[\s\S]*?<\/ul>/i.test(description) || /<table[\s\S]*?<\/table>/i.test(description);
+  const looksLikeHtml = /<h2>.*<\/h2>/i.test(description) && hasSpecBlock;
   const words = countWords(plainText);
 
   const qualityChecks = [
     { rule: "HTML başlık etiketi mevcut.", passed: /<h2>.*<\/h2>/i.test(description) },
-    { rule: "HTML özellik listesi mevcut.", passed: /<ul>.*<\/ul>/i.test(description) },
+    { rule: "HTML özellik tablosu/listesi mevcut.", passed: hasSpecBlock },
     {
-      rule: `Açıklama en az ${seoRules.minAiWords} kelime olmalıdır. Kelime Sayısı: ${words}`,
-      passed: words >= seoRules.minAiWords
+      rule: `Açıklama en az ${strategyRules.minAiWords} kelime olmalıdır. Kelime Sayısı: ${words}`,
+      passed: words >= strategyRules.minAiWords
     },
     {
-      rule: `Benzerlik skoru ${seoRules.similarityThreshold.toFixed(2)} değerini aşmamalıdır. Mevcut Skor: ${highestSimilarity.toFixed(2)}`,
-      passed: highestSimilarity <= seoRules.similarityThreshold
+      rule: `Benzerlik skoru ${strategyRules.similarityThreshold.toFixed(2)} değerini aşmamalıdır. Mevcut Skor: ${highestSimilarity.toFixed(2)}`,
+      passed: highestSimilarity <= strategyRules.similarityThreshold
     }
   ];
 
@@ -73,28 +157,177 @@ function validateDescription(description, facts, existingDescriptions) {
   };
 }
 
-async function generateRecord(product, approvedDescriptions) {
-  const facts = extractProductFacts(product);
-  const strategy = getCategoryStrategy(facts.category);
-  const templateDescription = getTemplateDescription(strategy.key, facts);
+function buildStyledSpecTable(rows) {
+  const body = rows
+    .map(
+      (row) => `<tr><th>${row.key}</th><td>${row.value}</td></tr>`
+    )
+    .join("");
+
+  return `<table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;"><tbody>${body}</tbody></table>`;
+}
+
+function formatDescriptionToTable(description, facts) {
+  const ulMatch = String(description || "").match(/<ul>([\s\S]*?)<\/ul>/i);
+  if (!ulMatch) return description;
+
+  const liRegex = /<li>\s*<strong>([^<:]+):<\/strong>\s*([\s\S]*?)\s*<\/li>/gi;
+  const parsedRows = [];
+  let match;
+  while ((match = liRegex.exec(ulMatch[1])) !== null) {
+    const key = normalizeSpace(match[1]);
+    const value = normalizeSpace(match[2]);
+    if (key && value) parsedRows.push({ key, value });
+  }
+
+  if (parsedRows.length === 0) return description;
+
+  const required = [
+    { key: "Ürün Adı", value: facts.title },
+    { key: "Stok Kodu", value: facts.stockCode }
+  ];
+  for (const item of required) {
+    if (!parsedRows.some((row) => row.key === item.key) && item.value) {
+      parsedRows.push(item);
+    }
+  }
+
+  const table = buildStyledSpecTable(parsedRows);
+  return String(description).replace(ulMatch[0], table).replace(/\n+/g, "");
+}
+
+function rebalanceKeywordDensity(description, keyword, rules) {
+  if (!keyword) return description;
+
+  let updatedDescription = String(description);
+
+  // Keep descriptions concise while balancing density for different analyzers.
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const plainDensity = calcDensityPercent(stripHtml(updatedDescription), keyword);
+    const rawDensity = calcDensityPercent(updatedDescription, keyword);
+    const plainOk = plainDensity >= rules.minKeywordDensity && plainDensity <= rules.maxKeywordDensity;
+    const rawOk = rawDensity >= rules.minKeywordDensity && rawDensity <= rules.maxKeywordDensity;
+
+    if (plainOk && rawOk) {
+      return updatedDescription;
+    }
+
+    // If any analyzer reports low density, add one exact-match sentence.
+    if (plainDensity < rules.minKeywordDensity || rawDensity < rules.minKeywordDensity) {
+      const boosterParagraph = `<p><strong>${keyword}</strong> tercih eden kullanıcılar için pratik ve düzenli kullanım sunar.</p>`;
+      if (/<h3>[\s\S]*?<\/h3>/i.test(updatedDescription)) {
+        updatedDescription = updatedDescription.replace(/<h3>[\s\S]*?<\/h3>/i, `${boosterParagraph}<h3>Sıkça Sorulan Sorular</h3>`);
+      } else {
+        updatedDescription += boosterParagraph;
+      }
+      continue;
+    }
+
+    // If any analyzer reports high density, add keyword-free filler to increase denominator.
+    const fillerParagraph = "<p>Günlük kullanımda konfor ve düzenli taşıma avantajı sunar.</p>";
+    if (/<h3>[\s\S]*?<\/h3>/i.test(updatedDescription)) {
+      updatedDescription = updatedDescription.replace(/<h3>[\s\S]*?<\/h3>/i, `${fillerParagraph}<h3>Sıkça Sorulan Sorular</h3>`);
+    } else {
+      updatedDescription += fillerParagraph;
+    }
+  }
+
+  return updatedDescription;
+}
+
+function getParagraphBlocks(html) {
+  return String(html || "").match(/<p>[\s\S]*?<\/p>/gi) || [];
+}
+
+function getFirstListBlock(html) {
+  const match = String(html || "").match(/<ul>[\s\S]*?<\/ul>/i);
+  return match ? match[0] : "";
+}
+
+function getFaqSection(html) {
+  const headingMatch = String(html || "").match(/<h3>[\s\S]*?<\/h3>/i);
+  const paragraphs = getParagraphBlocks(html).slice(2, 5);
+  if (!headingMatch && paragraphs.length === 0) return "";
+  return `${headingMatch ? headingMatch[0] : "<h3>Sıkça Sorulan Sorular</h3>"}${paragraphs.join("")}`;
+}
+
+function buildHybridDescription(localDescription, aiDescription, facts) {
+  const aiParagraphs = getParagraphBlocks(aiDescription).slice(0, 2);
+  const titleMatch = String(localDescription || "").match(/<h2>[\s\S]*?<\/h2>/i);
+  const titleBlock = titleMatch ? titleMatch[0] : `<h2>${facts.title}</h2>`;
+  const listBlock = getFirstListBlock(localDescription);
+  const faqSection = getFaqSection(aiDescription) || getFaqSection(localDescription);
+
+  if (aiParagraphs.length < 2 || !listBlock) {
+    return localDescription;
+  }
+
+  return `${titleBlock}${aiParagraphs.join("")}${listBlock}${faqSection}`;
+}
+
+function getCategorySpecificExistingDescriptions(approvedDescriptions, strategyKey) {
+  return approvedDescriptions
+    .filter((item) => item.strategyKey === strategyKey)
+    .map((item) => item.description);
+}
+
+function buildBestTemplateDescription(strategyKey, facts, approvedDescriptions, strategyRules) {
+  let bestDescription = getTemplateDescription(strategyKey, facts);
+  let bestValidation = validateDescription(bestDescription, facts, approvedDescriptions, strategyRules);
+
+  for (let attempt = 1; attempt < MAX_TEMPLATE_VARIATIONS; attempt += 1) {
+    const candidateFacts = { ...facts, variationSeed: `${facts.stockCode}-${attempt}` };
+    const candidateDescription = getTemplateDescription(strategyKey, candidateFacts);
+    const candidateValidation = validateDescription(candidateDescription, facts, approvedDescriptions, strategyRules);
+
+    if (candidateValidation.highestSimilarity < bestValidation.highestSimilarity) {
+      bestDescription = candidateDescription;
+      bestValidation = candidateValidation;
+    }
+
+    if (candidateValidation.passed) {
+      return {
+        description: candidateDescription,
+        validation: candidateValidation
+      };
+    }
+  }
+
+  return {
+    description: bestDescription,
+    validation: bestValidation
+  };
+}
+
+async function generateRecord(product, approvedDescriptions, approvedFeatureMap) {
+  const baseFacts = extractProductFacts(product);
+  const featureRecord = getApprovedFeatureRecord(product, baseFacts, approvedFeatureMap);
+  const facts = mergeApprovedFeatures(baseFacts, featureRecord);
+  const strategy = getCategoryStrategy(facts);
+  const strategyRules = seoRules.getStrategySeoRules(strategy.key);
+  const categoryDescriptions = getCategorySpecificExistingDescriptions(approvedDescriptions, strategy.key);
+  const templateResult = buildBestTemplateDescription(strategy.key, facts, categoryDescriptions, strategyRules);
+  const templateDescription = templateResult.description;
 
   let description = templateDescription;
   let source = "local-template";
-  let validation = validateDescription(description, facts, approvedDescriptions);
+  let validation = templateResult.validation;
   let fallbackReason = null;
 
   const canUseAi = isGeminiEnabled() && strategy.aiRecommended;
   if (canUseAi) {
     try {
-      const aiDescription = await generateHtmlDescription(facts, strategy.key, seoRules.minAiWords);
-      const aiValidation = validateDescription(aiDescription, facts, approvedDescriptions);
+      const aiDescription = await generateHtmlDescription(facts, strategy.key, strategyRules.minAiWords);
+      const candidateDescription =
+        strategy.mode === "hybrid" ? buildHybridDescription(templateDescription, aiDescription, facts) : aiDescription;
+      const aiValidation = validateDescription(candidateDescription, facts, categoryDescriptions, strategyRules);
       if (aiValidation.passed) {
-        description = aiDescription;
+        description = candidateDescription;
         source = "gemini";
         validation = aiValidation;
       } else {
         source = "local-fallback";
-        fallbackReason = "AI çıktısı kalite veya benzerlik kontrolünü geçemedi.";
+        fallbackReason = "AI çıktısı kalite veya benzerlik kontrolünü geçemedi, kategoriye özel şablona dönüldü.";
       }
     } catch (error) {
       source = "local-fallback";
@@ -102,10 +335,16 @@ async function generateRecord(product, approvedDescriptions) {
     }
   }
 
+  description = formatDescriptionToTable(description, facts);
+  if (strategy.key !== "preschool-bag") {
+    description = rebalanceKeywordDensity(description, facts.keyword, strategyRules);
+  }
+  validation = validateDescription(description, facts, categoryDescriptions, strategyRules);
+
   const seoTitle = buildSeoTitle(facts.title);
   const metaDescription = buildMetaDescription(facts);
   const metaKeywords = buildMetaKeywords(facts);
-  const seoChecklist = buildSeoChecklist(facts.title, facts.keyword, stripHtml(description));
+  const seoChecklist = buildSeoChecklist(facts.title, facts.keyword, stripHtml(description), strategyRules);
   const passedAllRules = seoChecklist.every((item) => item.passed);
 
   return {
@@ -119,6 +358,9 @@ async function generateRecord(product, approvedDescriptions) {
     MetaDescription: metaDescription,
     MetaKeywords: metaKeywords,
     UrunAciklamasi: description,
+    AnaKategori: facts.mainCategory || "",
+    AltKategori: facts.subCategory || "",
+    Strateji: strategy.key,
     UretimKaynagi: source,
     SEOKontrol: {
       passedAllRules,
@@ -144,13 +386,20 @@ async function main() {
     throw new Error("Girdi dosyası dizi (array) formatında olmalıdır.");
   }
 
-  const filtered = products.filter((product) => shouldIncludeByCategory(product.Kategori));
+  const filtered = products.filter((product) => shouldIncludeByCategory(product));
   if (filtered.length === 0) {
     throw new Error("Filtreye uyan ürün bulunamadı.");
   }
 
   console.log(`Toplam ürün: ${filtered.length}`);
   console.log(`Gemini durumu: ${isGeminiEnabled() ? "aktif" : "kapalı / anahtar yok"}`);
+
+  const { featureMap: approvedFeatureMap, approvedCount } = loadApprovedFeatureRecords();
+  if (FEATURE_INPUT_FILE) {
+    console.log(`Onaylı özellik kaydı: ${approvedCount}`);
+  }
+
+  fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
 
   const results = [];
   const approvedDescriptions = [];
@@ -159,9 +408,12 @@ async function main() {
     const product = filtered[index];
     console.log(`[${index + 1}/${filtered.length}] İşleniyor: ${normalizeSpace(product.UrunAdi)}`);
 
-    const record = await generateRecord(product, approvedDescriptions);
+    const record = await generateRecord(product, approvedDescriptions, approvedFeatureMap);
     results.push(record);
-    approvedDescriptions.push(record.UrunAciklamasi);
+    approvedDescriptions.push({
+      strategyKey: record.Strateji,
+      description: record.UrunAciklamasi
+    });
 
     if (isGeminiEnabled() && index < filtered.length - 1) {
       await sleep(API_DELAY_MS);

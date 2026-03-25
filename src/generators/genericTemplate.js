@@ -1,8 +1,8 @@
 function buildGenericDescription(facts) {
   return [
     `<h2>${facts.title}</h2>`,
-    `<p>${facts.title}, ${facts.category.toLocaleLowerCase("tr-TR")} kategorisinde günlük ihtiyaçları karşılamaya yönelik olarak sunulan pratik bir üründür. Kullanım kolaylığı ve dengeli performans beklentisini karşılamaya odaklanır.</p>`,
-    `<p>${facts.brand} markasının güvenilir ürün yaklaşımıyla sunulan bu model, farklı kullanıcı profillerine uyum sağlayan genel bir kullanım deneyimi sunar.</p>`,
+    `<p>${facts.title}, ${facts.category.toLocaleLowerCase("tr-TR")} grubunda temel kullanım beklentilerine cevap vermek üzere sunulan bir üründür. Kategoriye uygun kullanım senaryolarında erişilebilir ve dengeli bir deneyim hedefler.</p>`,
+    `<p>${facts.brand} markasının ürün yaklaşımı ile sunulan bu model, açıklaması daha sonra kategori bazlı zenginleştirilebilecek genel bir içerik çerçevesi sağlar.</p>`,
     "<ul>",
     `<li><strong>Marka:</strong> ${facts.brand}</li>`,
     `<li><strong>Kategori:</strong> ${facts.category}</li>`,

@@ -32,7 +32,26 @@ function getHighestSimilarity(text, existingTexts) {
   return highest;
 }
 
+function getMostSimilarMatch(text, existingTexts) {
+  let highest = 0;
+  let mostSimilarText = "";
+
+  for (const current of existingTexts) {
+    const score = calculateSimilarityScore(text, current);
+    if (score > highest) {
+      highest = score;
+      mostSimilarText = current;
+    }
+  }
+
+  return {
+    highestSimilarity: highest,
+    mostSimilarText
+  };
+}
+
 module.exports = {
   calculateSimilarityScore,
-  getHighestSimilarity
+  getHighestSimilarity,
+  getMostSimilarMatch
 };

@@ -3,13 +3,17 @@ const { normalizeSpace } = require("./textUtils");
 
 const FEATURE_KEYS = [
   "materyal",
+  "kumasOzelligi",
   "boyut",
   "agirlik",
   "bolmeSayisi",
+  "yanBolme",
+  "askiOzelligi",
   "renk",
   "yasGrubu",
   "karakter",
-  "yikanabilirlik"
+  "yikanabilirlik",
+  "uyumluUrunler"
 ];
 
 const MANUAL_PLACEHOLDER = "[DOLDUR]";
@@ -24,13 +28,17 @@ function getEmptyFeatureSet() {
 function getManualFeatureTemplate(facts = {}) {
   return normalizeFeatureObject({
     materyal: facts.materyal || MANUAL_PLACEHOLDER,
+    kumasOzelligi: facts.kumasOzelligi || MANUAL_PLACEHOLDER,
     boyut: facts.boyut || facts.bagSize || MANUAL_PLACEHOLDER,
     agirlik: facts.agirlik || MANUAL_PLACEHOLDER,
     bolmeSayisi: facts.bolmeSayisi || MANUAL_PLACEHOLDER,
+    yanBolme: facts.yanBolme || MANUAL_PLACEHOLDER,
+    askiOzelligi: facts.askiOzelligi || MANUAL_PLACEHOLDER,
     renk: facts.renk || facts.bagColor || MANUAL_PLACEHOLDER,
     yasGrubu: facts.yasGrubu || "3-6 Yaş",
     karakter: facts.karakter || facts.character || MANUAL_PLACEHOLDER,
-    yikanabilirlik: facts.yikanabilirlik || "Nemli bez ile silinebilir [KONTROL ET]"
+    yikanabilirlik: facts.yikanabilirlik || "Nemli bez ile silinebilir [KONTROL ET]",
+    uyumluUrunler: facts.uyumluUrunler || MANUAL_PLACEHOLDER
   });
 }
 
@@ -92,62 +100,79 @@ function extractJsonText(responseText) {
   return cleaned;
 }
 
-function buildFeatureExtractionPrompt(facts, strategyKey) {
+function buildFeatureExtractionPrompt(facts, strategyKey, webSourceText) {
   const categoryLabel =
     strategyKey === "preschool-bag" ? "anaokul çantası" : facts.category || "ürün";
 
+  const webSection = webSourceText
+    ? `- Üretici/mağaza sitesinden alınan ürün bilgisi: "${webSourceText}"`
+    : "";
+
   return `
-Görev: Aşağıdaki ürün metninden sadece doğrulanabilir teknik özellikleri çıkar.
+Görev: Aşağıdaki ürün bilgilerinden sadece doğrulanabilir teknik özellikleri çıkar.
 
 Ürün Bilgileri:
 - Ürün adı: "${facts.title}"
 - Marka: "${facts.brand}"
 - Kategori: "${facts.category}"
 - Stok kodu: "${facts.stockCode}"
-- Ürün metni: "${facts.detailsText || ""}"
+- Ürün metni (mağaza veritabanı): "${facts.detailsText || ""}"
+${webSection}
 
 Kurallar:
 1. Sadece geçerli JSON döndür.
-2. Sadece verilen ürün metnindeki bilgilere göre çıkarım yap.
-3. Metinde açıkça geçmeyen hiçbir bilgiyi tahmin etme.
-4. Emin olmadığın alanlar için boş string döndür.
-5. HTML, açıklama, not, markdown veya ekstra metin ekleme.
-6. Ürün tipi "${categoryLabel}" olduğundan aşağıdaki alanları döndür:
+2. Hem ürün metninden hem de üretici/mağaza sitesi bilgisinden çıkarım yapabilirsin.
+3. İki kaynak çelişirse üretici sitesindeki bilgiyi tercih et.
+4. Hiçbir kaynakta açıkça geçmeyen bilgiyi tahmin etme.
+5. Emin olmadığın alanlar için boş string döndür.
+6. HTML, açıklama, not, markdown veya ekstra metin ekleme.
+7. Ürün tipi "${categoryLabel}" olduğundan aşağıdaki alanları döndür:
    - materyal
+   - kumasOzelligi
    - boyut
    - agirlik
    - bolmeSayisi
+   - yanBolme
+   - askiOzelligi
    - renk
    - yasGrubu
    - karakter
    - yikanabilirlik
-7. Çıktı şeması tam olarak şu yapıda olsun:
+   - uyumluUrunler
+8. Çıktı şeması tam olarak şu yapıda olsun:
 {
   "Ozellikler": {
     "materyal": "",
+    "kumasOzelligi": "",
     "boyut": "",
     "agirlik": "",
     "bolmeSayisi": "",
+    "yanBolme": "",
+    "askiOzelligi": "",
     "renk": "",
     "yasGrubu": "",
     "karakter": "",
-    "yikanabilirlik": ""
+    "yikanabilirlik": "",
+    "uyumluUrunler": ""
   }
 }
 `;
 }
 
-async function generateFeatureExtraction(facts, strategyKey) {
-  if (!normalizeSpace(facts.detailsText)) {
+async function generateFeatureExtraction(facts, strategyKey, webSourceText) {
+  const hasInputDetails = Boolean(normalizeSpace(facts.detailsText));
+  const hasWebSource = Boolean(normalizeSpace(webSourceText));
+
+  if (!hasInputDetails && !hasWebSource) {
     return {
       Ozellikler: getEmptyFeatureSet(),
-      Kaynak: "missing-input-details",
+      Kaynak: "missing-all-sources",
       Durum: "kaynak_yok",
-      Hata: "Ürün detay metni bulunamadı."
+      Hata: "Ne ürün detay metni ne de web kaynağı bulunamadı."
     };
   }
 
-  const prompt = buildFeatureExtractionPrompt(facts, strategyKey);
+  const prompt = buildFeatureExtractionPrompt(facts, strategyKey, webSourceText);
   const responseText = await callGeminiText(prompt);
   const jsonText = extractJsonText(responseText);
 
@@ -164,9 +189,13 @@ async function generateFeatureExtraction(facts, strategyKey) {
   }
 
   const rawFeatures = parsed?.Ozellikler || parsed?.ozellikler || parsed;
+  const sourceLabel = hasWebSource
+    ? hasInputDetails ? "gemini-from-input+web" : "gemini-from-web"
+    : "gemini-from-input-details";
+
   return {
     Ozellikler: normalizeFeatureObject(rawFeatures),
-    Kaynak: "gemini-from-input-details",
+    Kaynak: sourceLabel,
     Durum: "bekliyor",
     Hata: ""
   };

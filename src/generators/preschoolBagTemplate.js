@@ -16,36 +16,60 @@ function buildPreschoolBagDescription(facts) {
     `<strong>${t}</strong>, ergonomik yapısı sayesinde çocukların eşyalarını rahat ve düzenli taşımasına yardımcı olur. Dış yüzeyi dayanıklı ve pratik kullanıma uygundur.`
   ];
 
-  const materyal = facts.materyal || "Polyester";
-  const boyut = facts.boyut || facts.bagSize || "30x25x12 cm";
-  const agirlik = facts.agirlik || "250 gr";
-  const bolmeSayisi = facts.bolmeSayisi || "2 Ana + 1 Ön Cep";
-  const renk = facts.renk || facts.bagColor || "Belirtilmemiş";
-  const yasGrubu = facts.yasGrubu || "3-6 Yaş";
-  const karakter = facts.karakter || facts.character || "Belirtilmemiş";
-  const yikanabilirlik = facts.yikanabilirlik || "Dış yüzeyi nemli bez ile silinebilir.";
+  const BEL = "Belirtilmemiş";
+
+  const materyal = facts.materyal || BEL;
+  const kumasOzelligi = facts.kumasOzelligi || BEL;
+  const boyut = facts.boyut || facts.bagSize || BEL;
+  const agirlik = facts.agirlik || BEL;
+  const bolmeSayisi = facts.bolmeSayisi || BEL;
+  const yanBolme = facts.yanBolme || BEL;
+  const askiOzelligi = facts.askiOzelligi || BEL;
+  const renk = facts.renk || facts.bagColor || BEL;
+  const yasGrubu = facts.yasGrubu || BEL;
+  const karakter = facts.karakter || facts.character || BEL;
+  const yikanabilirlik = facts.yikanabilirlik || BEL;
+  const uyumluUrunler = facts.uyumluUrunler || BEL;
+
+  const specRows = [
+    { label: "Marka", value: facts.brand },
+    { label: "Ürün Tipi", value: "Anaokul Çantası" },
+    { label: "Materyal", value: materyal },
+    { label: "Kumaş Özelliği", value: kumasOzelligi },
+    { label: "Boyut", value: boyut },
+    { label: "Ağırlık", value: agirlik },
+    { label: "Bölme Sayısı", value: bolmeSayisi },
+    { label: "Yan Bölme", value: yanBolme },
+    { label: "Askı Özelliği", value: askiOzelligi },
+    { label: "Renk", value: renk },
+    { label: "Hedef Yaş Grubu", value: yasGrubu },
+    { label: "Karakter/Tema", value: karakter },
+    { label: "Temizlik", value: yikanabilirlik },
+    { label: "Uyumlu Ürünler", value: uyumluUrunler },
+    { label: "Stok Kodu", value: facts.stockCode },
+    { label: "Ürün Adı", value: t }
+  ];
+
+  const listItems = specRows
+    .map((row) => `<li><strong>${row.label}:</strong> ${row.value}</li>`)
+    .join("");
+
+  const faqYas = yasGrubu
+    ? `<p><strong>${t} kaç yaş için uygundur?</strong> ${yasGrubu} aralığındaki anaokulu öğrencileri için uygundur.</p>`
+    : `<p><strong>${t} kaç yaş için uygundur?</strong> Anaokulu çağındaki çocuklar için uygundur.</p>`;
+
+  const faqTemizlik = yikanabilirlik
+    ? `<p><strong>Çanta yıkanabilir mi?</strong> ${yikanabilirlik}</p>`
+    : "";
 
   return [
     `<h2>${t}</h2>`,
     `<p>${pickVariant(intro, `${seed}-intro`)}</p>`,
     `<p>${pickVariant(mid, `${seed}-mid`)}</p>`,
-    "<ul>",
-    `<li><strong>Marka:</strong> ${facts.brand}</li>`,
-    `<li><strong>Ürün Tipi:</strong> Anaokul Çantası</li>`,
-    `<li><strong>Materyal:</strong> ${materyal}</li>`,
-    `<li><strong>Boyut:</strong> ${boyut}</li>`,
-    `<li><strong>Ağırlık:</strong> ${agirlik}</li>`,
-    `<li><strong>Bölme Sayısı:</strong> ${bolmeSayisi}</li>`,
-    `<li><strong>Renk:</strong> ${renk}</li>`,
-    `<li><strong>Hedef Yaş Grubu:</strong> ${yasGrubu}</li>`,
-    `<li><strong>Karakter/Tema:</strong> ${karakter}</li>`,
-    `<li><strong>Temizlik:</strong> ${yikanabilirlik}</li>`,
-    `<li><strong>Stok Kodu:</strong> ${facts.stockCode}</li>`,
-    `<li><strong>Ürün Adı:</strong> ${t}</li>`,
-    "</ul>",
+    `<ul>${listItems}</ul>`,
     "<h3>Sıkça Sorulan Sorular</h3>",
-    `<p><strong>${t} kaç yaş için uygundur?</strong> ${yasGrubu} aralığındaki anaokulu öğrencileri için uygundur.</p>`,
-    `<p><strong>Çanta yıkanabilir mi?</strong> ${yikanabilirlik}</p>`,
+    faqYas,
+    faqTemizlik,
     "<p><strong>Neden tercih edilmeli?</strong> Ergonomi, hafiflik ve düzenli iç hacim avantajı sunar.</p>",
     `<p>Siz de çocuğunuz için <strong>${t}</strong> tercih ederek okula gidişi konforlu hale getirebilirsiniz.</p>`
   ].filter(Boolean).join("");

@@ -10,6 +10,7 @@ const {
   getManualFeatureTemplate
 } = require("../lib/geminiFeatureExtractor");
 const { isGeminiEnabled } = require("../lib/geminiClient");
+const { fetchProductDetailsFromWeb } = require("../lib/webSourceFetcher");
 const { normalizeSpace, sleep } = require("../lib/textUtils");
 
 const INPUT_FILE = path.join(__dirname, "..", "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
@@ -17,6 +18,7 @@ const OUTPUT_FILE = path.join(__dirname, "..", "..", "data", "output", process.e
 const TARGET_CATEGORY = normalizeCategory(process.env.TARGET_CATEGORY || "");
 const API_DELAY_MS = Number(process.env.API_DELAY_MS || 1200);
 const FEATURE_MODE = normalizeCategory(process.env.FEATURE_MODE || "auto");
+const USE_WEB_SOURCE = process.env.USE_WEB_SOURCE !== "false";
 
 function shouldIncludeByCategory(product) {
   if (!TARGET_CATEGORY) return true;
@@ -25,7 +27,7 @@ function shouldIncludeByCategory(product) {
   return category.includes(TARGET_CATEGORY) || category === `${TARGET_CATEGORY}ler`;
 }
 
-function buildFeatureRecord(facts, strategy, extraction) {
+function buildFeatureRecord(facts, strategy, extraction, webInfo) {
   return {
     StokKodu: facts.stockCode,
     UrunAdi: facts.title,
@@ -36,7 +38,8 @@ function buildFeatureRecord(facts, strategy, extraction) {
     Kaynak: extraction.Kaynak,
     Durum: extraction.Durum,
     Hata: extraction.Hata || "",
-    KontrolNotu: extraction.KontrolNotu || ""
+    KontrolNotu: extraction.KontrolNotu || "",
+    WebKaynak: webInfo ? { url: webInfo.url || "", source: webInfo.source || "" } : null
   };
 }
 
@@ -77,6 +80,7 @@ async function main() {
 
   console.log(`Toplam ürün: ${filtered.length}`);
   console.log(`Çalışma modu: ${manualTemplateMode ? "bilgitopla-template" : "bilgitopla"}`);
+  console.log(`Web kaynak: ${USE_WEB_SOURCE ? "aktif" : "kapalı"}`);
 
   fs.mkdirSync(path.dirname(OUTPUT_FILE), { recursive: true });
 
@@ -89,13 +93,29 @@ async function main() {
     console.log(`[${index + 1}/${filtered.length}] Özellik toplanıyor: ${normalizeSpace(facts.title)}`);
 
     if (manualTemplateMode) {
-      results.push(buildFeatureRecord(facts, strategy, getTemplateExtraction(facts)));
+      results.push(buildFeatureRecord(facts, strategy, getTemplateExtraction(facts), null));
       continue;
     }
 
+    let webInfo = null;
+    let webSourceText = "";
+    if (USE_WEB_SOURCE) {
+      try {
+        webInfo = await fetchProductDetailsFromWeb(facts.title, facts.brand);
+        webSourceText = webInfo.text || "";
+        if (webSourceText) {
+          console.log(`  Web kaynak bulundu: ${webInfo.source} (${webSourceText.length} karakter)`);
+        } else {
+          console.log(`  Web kaynak bulunamadı: ${webInfo.source}`);
+        }
+      } catch (error) {
+        console.log(`  Web kaynak hatası: ${error.message}`);
+      }
+    }
+
     try {
-      const extraction = await generateFeatureExtraction(facts, strategy.key);
-      results.push(buildFeatureRecord(facts, strategy, extraction));
+      const extraction = await generateFeatureExtraction(facts, strategy.key, webSourceText);
+      results.push(buildFeatureRecord(facts, strategy, extraction, webInfo));
     } catch (error) {
       results.push(
         buildFeatureRecord(facts, strategy, {
@@ -103,7 +123,7 @@ async function main() {
           Kaynak: "gemini-request-error",
           Durum: "hata",
           Hata: error.message
-        })
+        }, webInfo)
       );
     }
 

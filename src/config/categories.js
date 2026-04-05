@@ -31,6 +31,18 @@ const STATIONERY_CATEGORIES = new Set([
   "makas"
 ]);
 
+const WHITEBOARD_MARKER_CATEGORIES = new Set([
+  "tahta kalemi",
+  "tahta kalemleri",
+  "beyaz tahta kalemi",
+  "beyaz tahta kalemleri",
+  "yazı tahtası kalemi",
+  "yazi tahtasi kalemi",
+  "whiteboard marker",
+  "board marker",
+  "flipchart kalemi"
+]);
+
 const BOOK_CATEGORIES = new Set([
   "eğitim kitapları",
   "egitim kitaplari",
@@ -187,6 +199,10 @@ function getCategoryStrategy(rawProduct) {
 
   if (matchSet(category, BAG_CATEGORIES)) {
     return { key: "bag", mode: "hybrid", aiRecommended: true };
+  }
+
+  if (matchSet(category, WHITEBOARD_MARKER_CATEGORIES)) {
+    return { key: "whiteboard-marker", mode: "template-first", aiRecommended: false };
   }
 
   if (matchSet(category, OFFICE_CATEGORIES)) {

@@ -187,6 +187,82 @@ function extractArtFacts(title, detailsText) {
   };
 }
 
+function extractWhiteboardMarkerFacts(title, detailsText) {
+  const combined = `${title} ${detailsText}`;
+  const normalized = normalizeTurkishForMatch(combined);
+
+  let productType = "";
+  if (
+    normalized.includes("tahta kalemi") ||
+    normalized.includes("beyaz tahta kalemi") ||
+    normalized.includes("yazi tahtasi kalemi")
+  ) {
+    productType = "Tahta Kalemi";
+  }
+
+  let usageArea = "";
+  const usageAreas = [];
+  if (normalized.includes("beyaz yazi tahtasi")) usageAreas.push("Beyaz Tahta");
+  if (normalized.includes("flipchart")) usageAreas.push("Flipchart");
+  if (usageAreas.length > 0) usageArea = usageAreas.join(", ");
+
+  let tipType = "";
+  if (normalized.includes("yuvarlak uc")) tipType = "Yuvarlak Uç";
+  else if (normalized.includes("kesik uc")) tipType = "Kesik Uç";
+
+  let tipThickness = "";
+  const thicknessMatch = combined.match(/(\d+(?:[.,]\d+)?)\s*-\s*(\d+(?:[.,]\d+)?)\s*mm/i);
+  if (thicknessMatch) {
+    tipThickness = `${thicknessMatch[1].replace(",", ".")} - ${thicknessMatch[2].replace(",", ".")} mm`;
+  } else {
+    const singleThicknessMatch = combined.match(/(\d+(?:[.,]\d+)?)\s*mm/i);
+    if (singleThicknessMatch) {
+      tipThickness = `${singleThicknessMatch[1].replace(",", ".")} mm`;
+    }
+  }
+
+  let inkType = "";
+  if (normalized.includes("pigment murekkep")) inkType = "Pigment Mürekkep";
+
+  let erasable = false;
+  if (
+    normalized.includes("kuru bezle silinebilir") ||
+    normalized.includes("silinebilir")
+  ) {
+    erasable = true;
+  }
+
+  let technology = "";
+  if (normalized.includes("cap-off")) {
+    technology = "Cap-off (Kurumaya Dayanıklı)";
+  }
+
+  let refillable = false;
+  if (
+    normalized.includes("yeniden doldurulabilir") ||
+    normalized.includes("yedek murekkep ile yeniden doldurulabilir")
+  ) {
+    refillable = true;
+  }
+
+  let chemicalContent = "";
+  if (normalized.includes("butil asetat icermez")) {
+    chemicalContent = "Bütil asetat içermez";
+  }
+
+  return {
+    productType,
+    usageArea,
+    tipType,
+    tipThickness,
+    inkType,
+    erasable,
+    technology,
+    refillable,
+    chemicalContent
+  };
+}
+
 function extractProductFacts(product) {
   const title = normalizeSpace(product.UrunAdi || product.urunAdi || product.label || product.name);
   const category = inferCategory(product);
@@ -208,6 +284,7 @@ function extractProductFacts(product) {
   const bagFacts = extractBagFacts(title, detailsText);
   const artFacts = extractArtFacts(title, detailsText);
   const preschoolBagFacts = extractPreschoolBagFacts(title, detailsText);
+  const whiteboardMarkerFacts = extractWhiteboardMarkerFacts(title, detailsText);
 
   return {
     title,
@@ -238,7 +315,8 @@ function extractProductFacts(product) {
     ...bookFacts,
     ...bagFacts,
     ...artFacts,
-    ...preschoolBagFacts
+    ...preschoolBagFacts,
+    ...whiteboardMarkerFacts
   };
 }
 

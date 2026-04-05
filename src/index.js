@@ -18,6 +18,7 @@ const { buildArtDescription } = require("./generators/artTemplate");
 const { buildBagDescription } = require("./generators/bagTemplate");
 const { buildPreschoolBagDescription } = require("./generators/preschoolBagTemplate");
 const { buildOfficeDescription } = require("./generators/officeTemplate");
+const { buildWhiteboardMarkerDescription } = require("./generators/whiteboardMarkerTemplate");
 const { buildKidsDescription } = require("./generators/kidsTemplate");
 const { buildGenericDescription } = require("./generators/genericTemplate");
 
@@ -119,6 +120,8 @@ function getTemplateDescription(strategyKey, facts) {
       return buildBagDescription(facts);
     case "office":
       return buildOfficeDescription(facts);
+    case "whiteboard-marker":
+      return buildWhiteboardMarkerDescription(facts);
     case "kids":
       return buildKidsDescription(facts);
     default:
@@ -201,7 +204,6 @@ function rebalanceKeywordDensity(description, keyword, rules) {
 
   let updatedDescription = String(description);
 
-  // Keep descriptions concise while balancing density for different analyzers.
   for (let attempt = 0; attempt < 4; attempt += 1) {
     const plainDensity = calcDensityPercent(stripHtml(updatedDescription), keyword);
     const rawDensity = calcDensityPercent(updatedDescription, keyword);
@@ -212,7 +214,6 @@ function rebalanceKeywordDensity(description, keyword, rules) {
       return updatedDescription;
     }
 
-    // If any analyzer reports low density, add one exact-match sentence.
     if (plainDensity < rules.minKeywordDensity || rawDensity < rules.minKeywordDensity) {
       const boosterParagraph = `<p><strong>${keyword}</strong> tercih eden kullanıcılar için pratik ve düzenli kullanım sunar.</p>`;
       if (/<h3>[\s\S]*?<\/h3>/i.test(updatedDescription)) {
@@ -223,7 +224,6 @@ function rebalanceKeywordDensity(description, keyword, rules) {
       continue;
     }
 
-    // If any analyzer reports high density, add keyword-free filler to increase denominator.
     const fillerParagraph = "<p>Günlük kullanımda konfor ve düzenli taşıma avantajı sunar.</p>";
     if (/<h3>[\s\S]*?<\/h3>/i.test(updatedDescription)) {
       updatedDescription = updatedDescription.replace(/<h3>[\s\S]*?<\/h3>/i, `${fillerParagraph}<h3>Sıkça Sorulan Sorular</h3>`);

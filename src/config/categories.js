@@ -132,7 +132,25 @@ const ART_CATEGORIES = new Set([
   "guaj boya",
   "resim malzemeleri",
   "pastel boya",
-  "kuruboya"
+  "kuruboya",
+  "cam boyası",
+  "cam boyasi",
+  "yağlı boya",
+  "yagli boya",
+  "modelaj kili",
+  "şekillendirme kili",
+  "seramik",
+  "modelaj",
+  "şekillendirme",
+  "eskiz",
+  "eskiz defteri",
+  "suluboya defteri",
+  "resim kağıdı",
+  "resim kagidi",
+  "kanvas",
+  "tuval",
+  "şövale",
+  "sovale"
 ]);
 
 const PRESCHOOL_BAG_CATEGORIES = new Set([
@@ -171,7 +189,32 @@ const OFFICE_CATEGORIES = new Set([
   "klasor",
   "yapıştırıcı",
   "yapistirici",
-  "bant"
+  "bant",
+  "hesap makinesi",
+  "hesap makines",
+  "calculator",
+  "ajanda",
+  "bloknot",
+  "planlama defteri",
+  "post-it",
+  "post it",
+  "yapışkan not",
+  "yapiskan not",
+  "küp blok",
+  "kup blok",
+  "prestij kalem",
+  "dolma kalem",
+  "zımba",
+  "zimba",
+  "delgeç",
+  "delgec",
+  "sunum dosyası",
+  "sunum dosyasi",
+  "poşet dosya",
+  "poset dosya",
+  "arşiv",
+  "arsiv",
+  "not defteri"
 ]);
 
 const KIDS_CATEGORIES = new Set([
@@ -218,16 +261,16 @@ function getCategoryStrategy(rawProduct) {
     return { key: "book", mode: "hybrid", aiRecommended: true };
   }
 
+  if (matchSet(category, ART_CATEGORIES)) {
+    return { key: "art", mode: "hybrid", aiRecommended: true };
+  }
+
   if (matchSet(category, SET_CATEGORIES)) {
     return { key: "set", mode: "hybrid", aiRecommended: true };
   }
 
   if (matchSet(category, TECH_CATEGORIES)) {
     return { key: "tech", mode: "hybrid", aiRecommended: true };
-  }
-
-  if (matchSet(category, ART_CATEGORIES)) {
-    return { key: "art", mode: "hybrid", aiRecommended: true };
   }
 
   if (matchSet(category, PRESCHOOL_BAG_CATEGORIES)) {

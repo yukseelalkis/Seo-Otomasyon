@@ -10,16 +10,14 @@ const { getMostSimilarMatch } = require("./lib/similarity");
 const { generateHtmlDescription, isGeminiEnabled } = require("./lib/geminiClient");
 const { stripHtml, countWords, countKeywordOccurrences, calcDensityPercent, normalizeSpace, sleep } = require("./lib/textUtils");
 
-// const { buildStationeryDescription } = require("./generators/stationeryTemplate");
+const { buildStationeryDescription } = require("./generators/staioneryTemplate/stationeryTemplate");
 const { buildBookDescription } = require("./generators/bookTemplates");
+const { buildBagDescription, buildPreschoolBagDescription } = require("./generators/bagTemplate/bagTemplate");
 // const { buildSetDescription } = require("./generators/setTemplate");
 // const { buildTechDescription } = require("./generators/techTemplate");
-// const { buildArtDescription } = require("./generators/artTemplate");
-// const { buildBagDescription } = require("./generators/bagTemplate");
-// const { buildPreschoolBagDescription } = require("./generators/preschoolBagTemplate");
-// const { buildOfficeDescription } = require("./generators/officeTemplate");
+const { buildArtDescription } = require("./generators/artTemplate/artTemplate");
+const { buildOfficeDescription } = require("./generators/officeTemplate/officeTemplate");
 // const { buildWhiteboardMarkerDescription } = require("./generators/whiteboardMarkerTemplate");
-// const { buildKidsDescription } = require("./generators/kidsTemplate");
 // const { buildGenericDescription } = require("./generators/genericTemplate");
 
 const INPUT_FILE = path.join(__dirname, "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
@@ -105,27 +103,23 @@ function mergeApprovedFeatures(facts, featureRecord) {
 function getTemplateDescription(strategyKey, facts) {
   switch (strategyKey) {
     case "stationery":
-      return buildStationeryDescription(facts);
-    case "book":
-      return buildBookDescription(facts);
+    case "kids":
     case "set":
-      return buildSetDescription(facts);
     case "tech":
-      return buildTechDescription(facts);
+    case "office":
+      return buildOfficeDescription(facts);
+    case "whiteboard-marker":
+      return buildStationeryDescription(facts);
     case "art":
       return buildArtDescription(facts);
+    case "book":
+      return buildBookDescription(facts);
     case "preschool-bag":
       return buildPreschoolBagDescription(facts);
     case "bag":
       return buildBagDescription(facts);
-    case "office":
-      return buildOfficeDescription(facts);
-    case "whiteboard-marker":
-      return buildWhiteboardMarkerDescription(facts);
-    case "kids":
-      return buildKidsDescription(facts);
     default:
-      return buildGenericDescription(facts);
+      return buildStationeryDescription(facts);
   }
 }
 
@@ -217,7 +211,7 @@ function rebalanceKeywordDensity(description, keyword, rules, strategyKey) {
   if (strategyKey === "book" || strategyKey.includes("sinav") || strategyKey.includes("edebiyat")) {
     boosterParagraph = `<p>Özellikle <strong>${keyword}</strong> arayan öğrenciler ve eğitmenler için ideal bir içerik sunar.</p>`;
   }
-  
+
   // Çift tekrarı önle
   if (updatedDescription.includes("pratik ve düzenli kullanım sunar") || updatedDescription.includes("öğrenciler ve eğitmenler için ideal")) {
     return updatedDescription;
@@ -307,7 +301,7 @@ async function generateRecord(product, approvedDescriptions, approvedFeatureMap)
   const categoryDescriptions = getCategorySpecificExistingDescriptions(approvedDescriptions, strategy.key);
   const templateResult = buildBestTemplateDescription(strategy.key, facts, categoryDescriptions, strategyRules);
   const templateDescription = templateResult.description;
-  
+
   console.log(`DEBUG: Strategy for ${facts.title}: ${strategy.key}`);
   if (templateDescription.includes("<table")) {
     console.log(`DEBUG: Template produced a TABLE.`);
@@ -341,8 +335,8 @@ async function generateRecord(product, approvedDescriptions, approvedFeatureMap)
     }
   }
 
-  // Sadece kitap olmayanlar için otomatik tablo dönüştürme yap (Kitaplar kendi tablolarını üretiyor)
-  if (strategy.key !== "book") {
+  // Kendi tablosunu üreten şablonlar için otomatik dönüşümü atla
+  if (strategy.key !== "book" && strategy.key !== "art" && strategy.key !== "bag" && strategy.key !== "preschool-bag" && strategy.key !== "office") {
     description = formatDescriptionToTable(description, facts);
   }
   if (strategy.key !== "preschool-bag") {

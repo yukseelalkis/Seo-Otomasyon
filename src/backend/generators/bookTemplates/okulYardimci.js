@@ -9,7 +9,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}öğrencilerinin müfredat konularını pekiştirmesi ve ders başarısını artırması için ${t.publisher} tarafından hazırlanmış kapsamlı bir yardımcı kaynaktır. Güncel MEB müfredatına tam uyumlu içeriğiyle öne çıkar.</p>`,

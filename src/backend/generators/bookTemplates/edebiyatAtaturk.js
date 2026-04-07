@@ -10,7 +10,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, Atatürk'ün akılcılık, aydınlanmacılık ve bilimcilik ilkelerini derinlemesine inceleyen vizyoner bir eserdir. Kitap, okuyucuya Cumhuriyet'in kuruluş felsefesini ve Atatürk'ün manevi mirasını etkili bir üslupla aktarmaktadır.</p>`,

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Otomasyon - MaviKalem</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-icon">🖊️</span>
+        <h1>MaviKalem <span class="highlight">SEO Otomasyon</span></h1>
+      </div>
+      <div class="header-right">
+        <div class="header-status" id="statusBadge">Hazır</div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+
+      <!-- SOL PANEL: Kontroller + Sürükle Bırak -->
+      <section class="panel panel-controls">
+        <h2>📂 Girdi</h2>
+
+        <!-- Sürükle-Bırak Alanı -->
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-content">
+            <div class="drop-icon">📥</div>
+            <p class="drop-title">JSON dosyanı buraya sürükle</p>
+            <p class="drop-subtitle">veya tıklayarak seç</p>
+          </div>
+          <input type="file" id="fileInput" accept=".json" hidden />
+        </div>
+
+        <!-- Seçilen Dosya -->
+        <div class="selected-file" id="selectedFileBox" style="display: none;">
+          <div class="file-info">
+            <span class="file-icon">📄</span>
+            <div class="file-details">
+              <span class="file-name" id="selectedFileName">—</span>
+              <span class="file-size" id="selectedFileSize">—</span>
+            </div>
+          </div>
+          <button class="btn-remove" id="btnRemoveFile" title="Dosyayı kaldır">✕</button>
+        </div>
+
+        <!-- Hedef Kategori -->
+        <div class="control-group">
+          <label for="targetCategory">Hedef Kategori <span class="optional">(opsiyonel)</span></label>
+          <input type="text" id="targetCategory" class="input-text" placeholder="Örn: ofis, çanta, kitap..." />
+        </div>
+
+        <!-- Üretim Butonu -->
+        <button id="btnGenerate" class="btn btn-primary" disabled>
+          <span class="btn-icon">▶</span> Üretimi Başlat
+        </button>
+
+        <!-- İlerleme -->
+        <div class="progress-section" id="progressSection" style="display: none;">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <p class="progress-text" id="progressText">İşleniyor...</p>
+        </div>
+
+        <!-- İstatistikler -->
+        <div class="stats-grid" id="statsGrid" style="display: none;">
+          <div class="stat-card">
+            <span class="stat-value" id="statTotal">0</span>
+            <span class="stat-label">Toplam</span>
+          </div>
+          <div class="stat-card stat-success">
+            <span class="stat-value" id="statSuccess">0</span>
+            <span class="stat-label">Başarılı</span>
+          </div>
+          <div class="stat-card stat-fail">
+            <span class="stat-value" id="statFail">0</span>
+            <span class="stat-label">Başarısız</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SAĞ PANEL: Sonuçlar -->
+      <section class="panel panel-results">
+        <div class="results-header">
+          <h2>📋 Sonuçlar</h2>
+          <div class="results-actions" id="resultsActions" style="display: none;">
+            <button class="btn btn-small btn-outline" id="btnCopyAll" title="Tümünü kopyala">
+              📋 Tümünü Kopyala
+            </button>
+            <button class="btn btn-small btn-outline" id="btnExportJson" title="JSON olarak indir">
+              💾 JSON İndir
+            </button>
+          </div>
+        </div>
+
+        <div id="resultsArea" class="results-area">
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p class="empty-title">Henüz sonuç yok</p>
+            <p class="empty-subtitle">Soldaki alana bir JSON dosyası sürükleyip üretimi başlat</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Kopyalama Bildirimi -->
+  <div class="toast" id="toast">Kopyalandı!</div>
+
+  <script src="app.js"></script>
+</body>
+</html>

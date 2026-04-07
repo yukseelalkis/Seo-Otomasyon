@@ -9,7 +9,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}öğrencilerinin ders konularını derinlemesine kavraması ve akademik başarısını artırması için ${t.publisher} tarafından hazırlanmış kapsamlı bir yardımcı kaynaktır.</p>`,

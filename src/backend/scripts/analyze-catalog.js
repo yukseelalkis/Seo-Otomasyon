@@ -1,9 +1,9 @@
-const fs = require("fs");
+﻿const fs = require("fs");
 const path = require("path");
 const xlsx = require("xlsx");
 
-const inputPath = path.join(__dirname, "..", "..", "data", "input", process.env.SOURCE_XLSX || "tum_urunler.xlsx");
-const outputPath = path.join(__dirname, "..", "..", "data", "output", "kategori_envanteri.json");
+const inputPath = path.join(__dirname, "..", "..", "..", "data", "input", process.env.SOURCE_XLSX || "tum_urunler.xlsx");
+const outputPath = path.join(__dirname, "..", "..", "..", "data", "output", "kategori_envanteri.json");
 
 function normalize(value) {
   return String(value || "").replace(/\s+/g, " ").trim() || "(bos)";

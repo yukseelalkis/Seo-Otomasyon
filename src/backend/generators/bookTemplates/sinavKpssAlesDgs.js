@@ -10,7 +10,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 function detectExamLabel(title) {
   const upper = String(title).toUpperCase();

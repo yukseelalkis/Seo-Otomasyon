@@ -7,7 +7,7 @@ const {
   pickVariationOffset,
   buildStyledTable,
   buildFaqBlock
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 // ============================================================
 // ALT KATEGORİ TESPİTİ
@@ -17,11 +17,8 @@ function detectArtSubType(facts) {
   const c = (facts.subCategory || facts.category || "").toLocaleLowerCase("tr-TR");
   const all = `${t} ${c}`;
 
-  // "Fırça Uçlu Kalem" (brush pen) ve "Boya Fırçası" (paint brush) farklı ürünlerdir!
-  // Kalem tespiti fırçadan ÖNCE gelmelidir
   if (/fırça uçlu kalem|firca uclu kalem|brush pen|brush marker/i.test(all)) return "fircaKalem";
   if (/kalem|marker|pigma|micron|charcoal|füzen/i.test(all)) return "kalem";
-  // "Yağlı Boya Fırçası" gibi isimler boya değil fırçadır
   if (/fırça|firca|brush/i.test(all)) return "firca";
   if (/kil|seramik|modelaj|şekillendirme|clay/i.test(all)) return "kil";
   if (/defter|kağıt|kagit|blok|sketch|eskiz|tuval/i.test(all)) return "kagit";
@@ -211,10 +208,10 @@ function buildArtClosing(title, seed) {
 function buildArtDescription(facts) {
   const seed = facts.variationSeed || facts.stockCode || facts.title;
   const subType = detectArtSubType(facts);
-  const templateData = { 
-    title: facts.title, 
-    brand: facts.brand || "", 
-    gramaj: facts.gramaj || "" 
+  const templateData = {
+    title: facts.title,
+    brand: facts.brand || "",
+    gramaj: facts.gramaj || ""
   };
 
   // Giriş paragrafı

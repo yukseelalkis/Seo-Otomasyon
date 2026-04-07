@@ -10,7 +10,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, AYT sınavında hedef bölümüne yerleşmek isteyen adaylar için ${t.publisher} tarafından hazırlanmış ileri düzey bir kaynaktır. ÖSYM'nin alan sınavı formatına ve yeni nesil soru tarzına tam uyumlu içeriğiyle adayların puan türüne özel hazırlanmasını destekler.</p>`,

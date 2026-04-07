@@ -10,7 +10,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, TYT sınavında yüksek netlere ulaşmak isteyen adaylar için ${t.publisher} tarafından özenle hazırlanmış kapsamlı bir kaynaktır. ÖSYM'nin güncel soru tarzlarına ve yeni nesil soru formatına tam uyumlu içeriğiyle sınav sürecinizin en güçlü yardımcısıdır.</p>`,

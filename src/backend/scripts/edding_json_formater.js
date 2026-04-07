@@ -1,12 +1,12 @@
-const XLSX = require('xlsx');
+﻿const XLSX = require('xlsx');
 const fs = require('fs');
 const path = require('path');
 
 // 1. Klasör ve Dosya Yollarını Belirle
 // __dirname scriptin olduğu klasörü (src/scripts) verir. 
 // Excel dosyası data/input/Excel içinde olduğu için yolları ona göre kuruyoruz.
-const excelPath = path.join(__dirname, '../../data/input/Excel/edding.xlsx');
-const outputDir = path.join(__dirname, '../../data/output/JsonFormat');
+const excelPath = path.join(__dirname, '../../../data/input/Excel/edding.xlsx');
+const outputDir = path.join(__dirname, '../../../data/output/JsonFormat');
 const outputPath = path.join(outputDir, 'edding-urunler.json');
 
 try {

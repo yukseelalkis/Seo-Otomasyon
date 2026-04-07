@@ -10,7 +10,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, YDS sınavında yüksek puan hedefleyen adaylar için ${t.publisher} tarafından hazırlanmış kapsamlı bir yabancı dil kaynağıdır. Güncel sınav formatına tam uyumlu içeriğiyle akademik kariyer hedeflerinize ulaşmanızda güçlü bir destek sunar.</p>`,

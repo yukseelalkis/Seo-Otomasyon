@@ -1,4 +1,4 @@
-require("dotenv").config();
+﻿require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 
@@ -13,8 +13,8 @@ const { isGeminiEnabled } = require("../lib/geminiClient");
 const { fetchProductDetailsFromWeb } = require("../lib/webSourceFetcher");
 const { normalizeSpace, sleep } = require("../lib/textUtils");
 
-const INPUT_FILE = path.join(__dirname, "..", "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
-const OUTPUT_FILE = path.join(__dirname, "..", "..", "data", "output", process.env.OUTPUT_FILE || "ozellikler.json");
+const INPUT_FILE = path.join(__dirname, "..", "..", "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
+const OUTPUT_FILE = path.join(__dirname, "..", "..", "..", "data", "output", process.env.OUTPUT_FILE || "ozellikler.json");
 const TARGET_CATEGORY = normalizeCategory(process.env.TARGET_CATEGORY || "");
 const API_DELAY_MS = Number(process.env.API_DELAY_MS || 1200);
 const FEATURE_MODE = normalizeCategory(process.env.FEATURE_MODE || "auto");

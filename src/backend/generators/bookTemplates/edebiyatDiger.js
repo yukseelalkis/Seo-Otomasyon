@@ -9,7 +9,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, okurun düşünce dünyasını genişleten ve farklı perspektifler sunan etkileyici bir edebiyat eseridir. ${t.publisher} tarafından okuyucuyla buluşturulan bu kitap, türünde öne çıkan içeriğiyle dikkat çekmektedir.</p>`,

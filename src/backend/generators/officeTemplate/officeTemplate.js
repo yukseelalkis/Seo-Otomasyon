@@ -8,7 +8,7 @@ const {
   pickVariationOffset,
   buildStyledTable,
   buildFaqBlock
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 // ============================================================
 // ALT KATEGORİ TESPİTİ

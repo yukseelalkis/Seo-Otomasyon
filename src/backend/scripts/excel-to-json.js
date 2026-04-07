@@ -1,9 +1,9 @@
-// const xlsx = require("xlsx");
+﻿// const xlsx = require("xlsx");
 // const fs = require("fs");
 // const path = require("path");
 
-// const excelFilePath = path.join(__dirname, "..", "..", "data", "input", process.env.SOURCE_XLSX || "tum_urunler.xlsx");
-// const jsonFilePath = path.join(__dirname, "..", "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
+// const excelFilePath = path.join(__dirname, "..", "..", "..", "data", "input", process.env.SOURCE_XLSX || "tum_urunler.xlsx");
+// const jsonFilePath = path.join(__dirname, "..", "..", "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
 
 // function normalizeSpace(value) {
 //   return String(value || "").replace(/\s+/g, " ").trim();
@@ -45,8 +45,8 @@
 const xlsx = require("xlsx");
 const fs = require("fs");
 const path = require("path");
-const excelFilePath = path.join(__dirname, "..", "..", "data", "input", "Excel", process.env.SOURCE_XLSX || "sirt_cantasi.xlsx");
-const jsonFilePath = path.join(__dirname, "..", "..", "data", "input", "JsonFormat", process.env.INPUT_FILE || "sirt_cantasi.json");
+const excelFilePath = path.join(__dirname, "..", "..", "..", "data", "input", "Excel", process.env.SOURCE_XLSX || "sirt_cantasi.xlsx");
+const jsonFilePath = path.join(__dirname, "..", "..", "..", "data", "input", "JsonFormat", process.env.INPUT_FILE || "sirt_cantasi.json");
 
 function normalizeSpace(value) {
   return String(value || "").replace(/\s+/g, " ").trim();

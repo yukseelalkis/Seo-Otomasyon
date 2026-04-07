@@ -20,10 +20,10 @@ const { buildOfficeDescription } = require("./generators/officeTemplate/officeTe
 // const { buildWhiteboardMarkerDescription } = require("./generators/whiteboardMarkerTemplate");
 // const { buildGenericDescription } = require("./generators/genericTemplate");
 
-const INPUT_FILE = path.join(__dirname, "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
-const OUTPUT_FILE = path.join(__dirname, "..", "data", "output", process.env.OUTPUT_FILE || "cikti.json");
+const INPUT_FILE = path.join(__dirname, "..", "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
+const OUTPUT_FILE = path.join(__dirname, "..", "..", "data", "output", process.env.OUTPUT_FILE || "cikti.json");
 const FEATURE_INPUT_FILE = process.env.FEATURE_INPUT_FILE
-  ? path.join(__dirname, "..", "data", "output", process.env.FEATURE_INPUT_FILE)
+  ? path.join(__dirname, "..", "..", "data", "output", process.env.FEATURE_INPUT_FILE)
   : "";
 const TARGET_CATEGORY = normalizeCategory(process.env.TARGET_CATEGORY || "");
 const APPROVED_FEATURE_STATUS = normalizeCategory(process.env.APPROVED_FEATURE_STATUS || "onaylandi");

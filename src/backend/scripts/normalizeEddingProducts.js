@@ -1,4 +1,4 @@
-console.log("SCRIPT ÇALIŞTI");
+﻿console.log("SCRIPT ÇALIŞTI");
 const fs = require("fs");
 const path = require("path");
 
@@ -133,8 +133,8 @@ function transformProduct(product) {
 }
 
 function main() {
-  const inputPath = path.join(__dirname, "..", "..", "data", "input", "JsonFormat", "edding-urunler.json");
-  const outputPath = path.join(__dirname, "..", "..", "data", "input", "JsonFormat", "edding-urunler-normalized.json");
+  const inputPath = path.join(__dirname, "..", "..", "..", "data", "input", "JsonFormat", "edding-urunler.json");
+  const outputPath = path.join(__dirname, "..", "..", "..", "data", "input", "JsonFormat", "edding-urunler-normalized.json");
 
   const products = JSON.parse(fs.readFileSync(inputPath, "utf8"));
 

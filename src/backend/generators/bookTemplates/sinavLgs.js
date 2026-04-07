@@ -10,7 +10,7 @@ const {
   buildClosingParagraph,
   getAuthor,
   getPublisher
-} = require("../../../helpers/books_helper");
+} = require("../../helpers/books_helper");
 
 const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, 8. sınıf öğrencilerinin LGS sınavına en etkili şekilde hazırlanması için ${t.publisher} tarafından özenle hazırlanmıştır. Güncel MEB müfredatına ve yeni nesil soru formatına tam uyumlu içeriğiyle öğrencilerin sınav başarısını artırmayı hedefler.</p>`,

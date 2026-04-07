@@ -10,17 +10,17 @@ const { getMostSimilarMatch } = require("./lib/similarity");
 const { generateHtmlDescription, isGeminiEnabled } = require("./lib/geminiClient");
 const { stripHtml, countWords, countKeywordOccurrences, calcDensityPercent, normalizeSpace, sleep } = require("./lib/textUtils");
 
-const { buildStationeryDescription } = require("./generators/stationeryTemplate");
-const { buildBookDescription } = require("./generators/bookTemplate");
-const { buildSetDescription } = require("./generators/setTemplate");
-const { buildTechDescription } = require("./generators/techTemplate");
-const { buildArtDescription } = require("./generators/artTemplate");
-const { buildBagDescription } = require("./generators/bagTemplate");
-const { buildPreschoolBagDescription } = require("./generators/preschoolBagTemplate");
-const { buildOfficeDescription } = require("./generators/officeTemplate");
-const { buildWhiteboardMarkerDescription } = require("./generators/whiteboardMarkerTemplate");
-const { buildKidsDescription } = require("./generators/kidsTemplate");
-const { buildGenericDescription } = require("./generators/genericTemplate");
+// const { buildStationeryDescription } = require("./generators/stationeryTemplate");
+const { buildBookDescription } = require("./generators/bookTemplates");
+// const { buildSetDescription } = require("./generators/setTemplate");
+// const { buildTechDescription } = require("./generators/techTemplate");
+// const { buildArtDescription } = require("./generators/artTemplate");
+// const { buildBagDescription } = require("./generators/bagTemplate");
+// const { buildPreschoolBagDescription } = require("./generators/preschoolBagTemplate");
+// const { buildOfficeDescription } = require("./generators/officeTemplate");
+// const { buildWhiteboardMarkerDescription } = require("./generators/whiteboardMarkerTemplate");
+// const { buildKidsDescription } = require("./generators/kidsTemplate");
+// const { buildGenericDescription } = require("./generators/genericTemplate");
 
 const INPUT_FILE = path.join(__dirname, "..", "data", "input", process.env.INPUT_FILE || "urunler.json");
 const OUTPUT_FILE = path.join(__dirname, "..", "data", "output", process.env.OUTPUT_FILE || "cikti.json");
@@ -199,41 +199,40 @@ function formatDescriptionToTable(description, facts) {
   return String(description).replace(ulMatch[0], table).replace(/\n+/g, "");
 }
 
-function rebalanceKeywordDensity(description, keyword, rules) {
+// === DÜZELTİLEN VE ÇİFT TEKRARI ÖNLEYEN FONKSİYON ===
+function rebalanceKeywordDensity(description, keyword, rules, strategyKey) {
   if (!keyword) return description;
 
   let updatedDescription = String(description);
+  const plainDensity = calcDensityPercent(stripHtml(updatedDescription), keyword);
+  const rawDensity = calcDensityPercent(updatedDescription, keyword);
 
-  for (let attempt = 0; attempt < 4; attempt += 1) {
-    const plainDensity = calcDensityPercent(stripHtml(updatedDescription), keyword);
-    const rawDensity = calcDensityPercent(updatedDescription, keyword);
-    const plainOk = plainDensity >= rules.minKeywordDensity && plainDensity <= rules.maxKeywordDensity;
-    const rawOk = rawDensity >= rules.minKeywordDensity && rawDensity <= rules.maxKeywordDensity;
+  // Yoğunluk zaten yeterliyse hiç dokunma
+  if (plainDensity >= rules.minKeywordDensity && rawDensity >= rules.minKeywordDensity) {
+    return updatedDescription;
+  }
 
-    if (plainOk && rawOk) {
-      return updatedDescription;
-    }
+  // Stratejiye göre SEO destek cümlesini seç
+  let boosterParagraph = `<p><strong>${keyword}</strong> tercih eden kullanıcılar için pratik ve düzenli kullanım sunar.</p>`;
+  if (strategyKey === "book" || strategyKey.includes("sinav") || strategyKey.includes("edebiyat")) {
+    boosterParagraph = `<p>Özellikle <strong>${keyword}</strong> arayan öğrenciler ve eğitmenler için ideal bir içerik sunar.</p>`;
+  }
+  
+  // Çift tekrarı önle
+  if (updatedDescription.includes("pratik ve düzenli kullanım sunar") || updatedDescription.includes("öğrenciler ve eğitmenler için ideal")) {
+    return updatedDescription;
+  }
 
-    if (plainDensity < rules.minKeywordDensity || rawDensity < rules.minKeywordDensity) {
-      const boosterParagraph = `<p><strong>${keyword}</strong> tercih eden kullanıcılar için pratik ve düzenli kullanım sunar.</p>`;
-      if (/<h3>[\s\S]*?<\/h3>/i.test(updatedDescription)) {
-        updatedDescription = updatedDescription.replace(/<h3>[\s\S]*?<\/h3>/i, `${boosterParagraph}<h3>Sıkça Sorulan Sorular</h3>`);
-      } else {
-        updatedDescription += boosterParagraph;
-      }
-      continue;
-    }
-
-    const fillerParagraph = "<p>Günlük kullanımda konfor ve düzenli taşıma avantajı sunar.</p>";
-    if (/<h3>[\s\S]*?<\/h3>/i.test(updatedDescription)) {
-      updatedDescription = updatedDescription.replace(/<h3>[\s\S]*?<\/h3>/i, `${fillerParagraph}<h3>Sıkça Sorulan Sorular</h3>`);
-    } else {
-      updatedDescription += fillerParagraph;
-    }
+  // SSS bloğunun üstüne sadece 1 kere ekle
+  if (/<h3>/i.test(updatedDescription)) {
+    updatedDescription = updatedDescription.replace(/<h3>/i, `${boosterParagraph}<h3>`);
+  } else {
+    updatedDescription += boosterParagraph;
   }
 
   return updatedDescription;
 }
+// ===================================================
 
 function getParagraphBlocks(html) {
   return String(html || "").match(/<p>[\s\S]*?<\/p>/gi) || [];
@@ -308,6 +307,13 @@ async function generateRecord(product, approvedDescriptions, approvedFeatureMap)
   const categoryDescriptions = getCategorySpecificExistingDescriptions(approvedDescriptions, strategy.key);
   const templateResult = buildBestTemplateDescription(strategy.key, facts, categoryDescriptions, strategyRules);
   const templateDescription = templateResult.description;
+  
+  console.log(`DEBUG: Strategy for ${facts.title}: ${strategy.key}`);
+  if (templateDescription.includes("<table")) {
+    console.log(`DEBUG: Template produced a TABLE.`);
+  } else {
+    console.log(`DEBUG: Template DID NOT produce a table.`);
+  }
 
   let description = templateDescription;
   let source = "local-template";
@@ -335,9 +341,12 @@ async function generateRecord(product, approvedDescriptions, approvedFeatureMap)
     }
   }
 
-  description = formatDescriptionToTable(description, facts);
+  // Sadece kitap olmayanlar için otomatik tablo dönüştürme yap (Kitaplar kendi tablolarını üretiyor)
+  if (strategy.key !== "book") {
+    description = formatDescriptionToTable(description, facts);
+  }
   if (strategy.key !== "preschool-bag") {
-    description = rebalanceKeywordDensity(description, facts.keyword, strategyRules);
+    description = rebalanceKeywordDensity(description, facts.keyword, strategyRules, strategy.key);
   }
   validation = validateDescription(description, facts, categoryDescriptions, strategyRules);
 

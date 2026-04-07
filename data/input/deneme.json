@@ -1,0 +1,24 @@
+[
+  {
+    "StokKodu": "LMT-TYT-BIYO-01",
+    "UrunAdi": "Limit Yayınları TYT Biyoloji Soru Bankası",
+    "Marka": "Limit Yayınları",
+    "Kategori": "Sınav Kitapları",
+    "AnaKategori": "TYT",
+    "AltKategori": "Biyoloji",
+    "Yazar": "",
+    "SayfaSayisi": "320",
+    "Ebat": "19x27"
+  },
+  {
+    "StokKodu": "YKY-ROM-01",
+    "UrunAdi": "Kürk Mantolu Madonna",
+    "Marka": "Yapı Kredi Yayınları",
+    "Kategori": "Edebiyat",
+    "AnaKategori": "Roman",
+    "AltKategori": "Türk Edebiyatı",
+    "Yazar": "Sabahattin Ali",
+    "SayfaSayisi": "160",
+    "Ebat": "13x21"
+  }
+]

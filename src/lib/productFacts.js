@@ -89,15 +89,21 @@ function extractBrushFacts(title, detailsText) {
 function extractBookFacts(title, detailsText) {
   const combined = `${title} ${detailsText}`;
   const classMatch = combined.match(/(\d{1,2})\.\s*Sınıf/i);
-  const examMatch = combined.match(/\b(TYT|AYT|LGS|YKS)\b/i);
-  const lessonMatch = combined.match(/\b(Fizik|Kimya|Matematik|Türkçe|Biyoloji|Geometri|Tarih|Coğrafya|Fen)\b/i);
-  const questionTypeMatch = combined.match(/\b(Soru Bankası|Deneme|Konu Anlatım|Föy|Foy)\b/i);
+  const examMatch = combined.match(/\b(TYT|AYT|LGS|YKS|KPSS|ALES|DGS|YDS|YÖKDİL)\b/i);
+  const lessonMatch = combined.match(/\b(Fizik|Kimya|Matematik|Türkçe|Biyoloji|Geometri|Tarih|Coğrafya|Fen|İngilizce|Edebiyat|Felsefe|Din Kültürü|Sosyal Bilgiler|Vatandaşlık)\b/i);
+  const questionTypeMatch = combined.match(/\b(Soru Bankası|Deneme|Konu Anlatım|Föy|Foy|Konu Anlatımlı|Yaprak Test|Fasikül|Soru Kitabı|Test Kitabı)\b/i);
+  const pageMatch = combined.match(/(\d{2,4})\s*(?:sayfa|syf|sf|yaprak|yp)/i);
+  const sizeMatch = combined.match(/(\d{1,2})\s*[xX×]\s*(\d{1,2})\s*cm/i);
+  const isbnMatch = combined.match(/(97[89]\d{10})/i);
 
   return {
     classLevel: classMatch ? `${classMatch[1]}. Sınıf` : "",
     examType: examMatch ? examMatch[1].toUpperCase() : "",
     lesson: lessonMatch ? lessonMatch[1] : "",
-    publicationType: questionTypeMatch ? normalizeSpace(questionTypeMatch[1]) : ""
+    publicationType: questionTypeMatch ? normalizeSpace(questionTypeMatch[1]) : "",
+    sayfaSayisi: pageMatch ? pageMatch[1] : "",
+    ebat: sizeMatch ? `${sizeMatch[1]} x ${sizeMatch[2]} cm` : "",
+    isbn: isbnMatch ? isbnMatch[1] : ""
   };
 }
 
@@ -286,6 +292,23 @@ function extractProductFacts(product) {
   const preschoolBagFacts = extractPreschoolBagFacts(title, detailsText);
   const whiteboardMarkerFacts = extractWhiteboardMarkerFacts(title, detailsText);
 
+  // Kitap-spesifik alanlar (ürün verisinden veya extractBookFacts'ten)
+  const yazar = normalizeSpace(
+    product.Yazar || product.yazar || product.author || ""
+  );
+  const yayinevi = normalizeSpace(
+    product.Yayinevi || product.yayinevi || product.publisher || ""
+  );
+  const sayfaSayisi = normalizeSpace(
+    product.SayfaSayisi || product.sayfaSayisi || product.pageCount || bookFacts.sayfaSayisi || ""
+  );
+  const ebat = normalizeSpace(
+    product.Ebat || product.ebat || product.dimensions || bookFacts.ebat || ""
+  );
+  const isbn = normalizeSpace(
+    product.ISBN || product.isbn || bookFacts.isbn || ""
+  );
+
   return {
     title,
     keyword: title,
@@ -311,6 +334,11 @@ function extractProductFacts(product) {
     karakter: normalizeSpace(product.karakter || preschoolBagFacts.character || ""),
     yikanabilirlik: normalizeSpace(product.yikanabilirlik || ""),
     uyumluUrunler: normalizeSpace(product.uyumluUrunler || ""),
+    yazar,
+    yayinevi: yayinevi || brand,
+    sayfaSayisi,
+    ebat,
+    isbn,
     ...brushFacts,
     ...bookFacts,
     ...bagFacts,

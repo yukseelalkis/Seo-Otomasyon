@@ -38,144 +38,289 @@ app.on("activate", () => {
 });
 
 // ============================================================
+// Üretim motoru (IPC handler'lar tarafından paylaşılır)
+// ============================================================
+
+function loadGenerationDeps() {
+  const { normalizeCategory, getCategoryStrategy, getCategorySearchText } = require("./backend/config/categories");
+  const seoRules = require("./backend/config/seoRules");
+  const { extractProductFacts } = require("./backend/lib/productFacts");
+  const { buildSeoTitle, buildMetaDescription, buildMetaKeywords, buildSeoChecklist } = require("./backend/lib/seo");
+  const { getMostSimilarMatch } = require("./backend/lib/similarity");
+  const { stripHtml, countWords, normalizeSpace } = require("./backend/lib/textUtils");
+
+  const { buildStationeryDescription } = require("./backend/generators/staioneryTemplate/stationeryTemplate");
+  const { buildBookDescription } = require("./backend/generators/bookTemplates");
+  const { buildBagDescription, buildPreschoolBagDescription } = require("./backend/generators/bagTemplate/bagTemplate");
+  const { buildArtDescription } = require("./backend/generators/artTemplate/artTemplate");
+  const { buildOfficeDescription } = require("./backend/generators/officeTemplate/officeTemplate");
+
+  function getTemplateDescription(strategyKey, facts) {
+    switch (strategyKey) {
+      case "stationery":
+      case "kids":
+      case "set":
+      case "tech":
+      case "office":
+        return buildOfficeDescription(facts);
+      case "whiteboard-marker":
+        return buildStationeryDescription(facts);
+      case "art":
+        return buildArtDescription(facts);
+      case "book":
+        return buildBookDescription(facts);
+      case "preschool-bag":
+        return buildPreschoolBagDescription(facts);
+      case "bag":
+        return buildBagDescription(facts);
+      default:
+        return buildStationeryDescription(facts);
+    }
+  }
+
+  return {
+    normalizeCategory,
+    getCategoryStrategy,
+    getCategorySearchText,
+    seoRules,
+    extractProductFacts,
+    buildSeoTitle,
+    buildMetaDescription,
+    buildMetaKeywords,
+    buildSeoChecklist,
+    getMostSimilarMatch,
+    stripHtml,
+    countWords,
+    normalizeSpace,
+    getTemplateDescription
+  };
+}
+
+function applyTargetCategoryEnv(targetCategory) {
+  if (targetCategory) {
+    process.env.TARGET_CATEGORY = targetCategory;
+  } else {
+    delete process.env.TARGET_CATEGORY;
+  }
+}
+
+function parseProductsArray(raw) {
+  let products = JSON.parse(raw);
+  if (!Array.isArray(products)) {
+    if (products && typeof products === "object") {
+      products = [products];
+    } else {
+      throw new Error("Geçersiz JSON: dizi veya nesne bekleniyor.");
+    }
+  }
+  if (products.length === 0) {
+    throw new Error("Dosya boş.");
+  }
+  return products;
+}
+
+function filterProducts(products, targetCategory, ctx) {
+  const filterCategory = ctx.normalizeCategory(targetCategory || "");
+  return products.filter((product) => {
+    if (!filterCategory) return true;
+    const cat = ctx.normalizeCategory(ctx.getCategorySearchText(product));
+    return cat === filterCategory || cat.includes(filterCategory);
+  });
+}
+
+function processOneProduct(product, approvedDescriptions, ctx) {
+  const facts = ctx.extractProductFacts(product);
+  const hedefKelime = ctx.normalizeSpace(product.HedefKelime || product.hedefKelime || "") || facts.keyword;
+  const urunBasligi = ctx.normalizeSpace(product.UrunBasligi || product.urunBasligi || "") || facts.title;
+  const factsForSeo = { ...facts, keyword: hedefKelime, title: urunBasligi };
+
+  const strategy = ctx.getCategoryStrategy(facts);
+  const strategyRules = ctx.seoRules.getStrategySeoRules(strategy.key);
+
+  const categoryDescriptions = approvedDescriptions
+    .filter((d) => d.strategyKey === strategy.key)
+    .map((d) => d.description);
+
+  const description = ctx.getTemplateDescription(strategy.key, facts);
+  const plainText = ctx.stripHtml(description);
+  const seoTitle = ctx.buildSeoTitle(factsForSeo.title);
+  const metaDescription = ctx.buildMetaDescription(factsForSeo);
+  const metaKeywords = ctx.buildMetaKeywords(factsForSeo);
+  const seoChecklist = ctx.buildSeoChecklist(factsForSeo.title, factsForSeo.keyword, plainText, strategyRules);
+  const passedAllRules = seoChecklist.every((item) => item.passed);
+  const { highestSimilarity } = ctx.getMostSimilarMatch(description, categoryDescriptions);
+
+  const record = {
+    StokKodu: facts.stockCode,
+    UrunAdi: facts.title,
+    Kategori: facts.category,
+    Marka: facts.brand,
+    HedefKelime: hedefKelime,
+    UrunBasligi: urunBasligi,
+    SeoBaslik: seoTitle,
+    MetaDescription: metaDescription,
+    MetaKeywords: metaKeywords,
+    UrunAciklamasi: description,
+    Strateji: strategy.key,
+    UretimKaynagi: "local-template",
+    SEOKontrol: { passedAllRules, checklist: seoChecklist },
+    KaliteKontrol: {
+      wordCount: ctx.countWords(plainText),
+      highestSimilarity: Number(highestSimilarity.toFixed(2))
+    }
+  };
+
+  approvedDescriptions.push({ strategyKey: strategy.key, description });
+
+  return record;
+}
+
+/**
+ * Yükleme: ham ürün listesi renderer'dan (products) veya diskten (filePath) gelir, filtre uygulanır.
+ */
+function readAndFilterForLoad(options, targetCategory) {
+  const ctx = loadGenerationDeps();
+  let products;
+  if (options && Array.isArray(options.products)) {
+    products = options.products;
+    if (products.length === 0) {
+      throw new Error("Dosya boş.");
+    }
+  } else {
+    const filePath = options && options.filePath;
+    if (!filePath || !fs.existsSync(filePath)) {
+      throw new Error(
+        options && options.filePath
+          ? `Dosya bulunamadı: ${filePath}`
+          : "Ürün verisi yok: JSON içeriği veya dosya yolu gerekli."
+      );
+    }
+    const raw = fs.readFileSync(filePath, "utf8");
+    products = parseProductsArray(raw);
+  }
+  const filtered = filterProducts(products, targetCategory, ctx);
+  if (filtered.length === 0) {
+    throw new Error("Filtreye uyan ürün bulunamadı.");
+  }
+  return { filtered, ctx };
+}
+
+/**
+ * Üretim: ekrandaki liste (products) doğrudan kullanılır; yoksa dosyadan okunup filtrelenir.
+ */
+function resolveGenerationList(options, targetCategory) {
+  const ctx = loadGenerationDeps();
+  if (options && Array.isArray(options.products)) {
+    if (options.products.length === 0) {
+      throw new Error("Ürün listesi boş.");
+    }
+    return { list: options.products, ctx };
+  }
+  const { filtered } = readAndFilterForLoad(options, targetCategory);
+  return { list: filtered, ctx };
+}
+
+function normalizePriorDescriptions(prior) {
+  if (!Array.isArray(prior)) return [];
+  return prior
+    .filter((p) => p && p.strategyKey && p.description)
+    .map((p) => ({ strategyKey: p.strategyKey, description: p.description }));
+}
+
+function sendProgress(current, total, productName) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send("generation-progress", {
+      current,
+      total,
+      productName
+    });
+  }
+}
+
+// ============================================================
 // IPC HANDLERS
 // ============================================================
 
 /**
- * Sürükle-bırak ile gelen dosyayı işle ve sonuçları döndür.
- * Frontend dosya yolunu (filePath) gönderir.
+ * JSON dosyasını oku; hedef kategoriye göre filtrelenmiş ürün listesini döndür.
+ */
+ipcMain.handle("load-json-products", async (_event, options) => {
+  try {
+    const { targetCategory } = options || {};
+    applyTargetCategoryEnv(targetCategory);
+    const { filtered } = readAndFilterForLoad(options || {}, targetCategory);
+    return { success: true, products: filtered, message: `${filtered.length} ürün yüklendi.` };
+  } catch (error) {
+    return { success: false, message: error.message, products: [] };
+  }
+});
+
+/**
+ * Belirli indekslerdeki ürünleri üret. Önceki oturum açıklamaları priorDescriptions ile gelir.
+ */
+ipcMain.handle("generate-at-indices", async (_event, options) => {
+  try {
+    const { targetCategory, indices, priorDescriptions } = options || {};
+    if (!Array.isArray(indices) || indices.length === 0) {
+      return { success: false, message: "Geçersiz indeks listesi.", updates: [] };
+    }
+
+    applyTargetCategoryEnv(targetCategory);
+    const { list, ctx } = resolveGenerationList(options || {}, targetCategory);
+
+    const approvedDescriptions = normalizePriorDescriptions(priorDescriptions);
+    const uniqueSorted = [...new Set(indices.map((n) => Number(n)).filter((n) => Number.isInteger(n) && n >= 0))].sort(
+      (a, b) => a - b
+    );
+
+    const updates = [];
+    let progressStep = 0;
+    const totalSteps = uniqueSorted.length;
+
+    for (const index of uniqueSorted) {
+      if (index >= list.length) {
+        return { success: false, message: `Geçersiz ürün indeksi: ${index}`, updates };
+      }
+      progressStep += 1;
+      const product = list[index];
+      const facts = ctx.extractProductFacts(product);
+      const record = processOneProduct(product, approvedDescriptions, ctx);
+      updates.push({ index, record });
+      sendProgress(progressStep, totalSteps, facts.title);
+    }
+
+    return { success: true, updates, message: `${updates.length} ürün üretildi.` };
+  } catch (error) {
+    return { success: false, message: error.message, updates: [] };
+  }
+});
+
+/**
+ * Tüm filtrelenmiş listeyi tek seferde üret (tam işlem).
  */
 ipcMain.handle("start-generation", async (_event, options) => {
   try {
-    const { filePath, targetCategory } = options || {};
+    const { targetCategory } = options || {};
+    applyTargetCategoryEnv(targetCategory);
 
-    if (!filePath || !fs.existsSync(filePath)) {
-      return { success: false, message: `Dosya bulunamadı: ${filePath}` };
-    }
-
-    // .env yerine doğrudan environment set et
-    if (targetCategory) {
-      process.env.TARGET_CATEGORY = targetCategory;
-    } else {
-      delete process.env.TARGET_CATEGORY;
-    }
-
-    // Dosyayı oku ve parse et
-    const raw = fs.readFileSync(filePath, "utf8");
-    const products = JSON.parse(raw);
-
-    if (!Array.isArray(products) || products.length === 0) {
-      return { success: false, message: "Dosya boş veya geçersiz format (array bekleniyor)." };
-    }
-
-    // Backend modüllerini yükle
-    const { normalizeCategory, getCategoryStrategy, getCategorySearchText } = require("./backend/config/categories");
-    const seoRules = require("./backend/config/seoRules");
-    const { extractProductFacts } = require("./backend/lib/productFacts");
-    const { buildSeoTitle, buildMetaDescription, buildMetaKeywords, buildSeoChecklist } = require("./backend/lib/seo");
-    const { getMostSimilarMatch } = require("./backend/lib/similarity");
-    const { stripHtml, countWords, normalizeSpace } = require("./backend/lib/textUtils");
-
-    // Template generators
-    const { buildStationeryDescription } = require("./backend/generators/staioneryTemplate/stationeryTemplate");
-    const { buildBookDescription } = require("./backend/generators/bookTemplates");
-    const { buildBagDescription, buildPreschoolBagDescription } = require("./backend/generators/bagTemplate/bagTemplate");
-    const { buildArtDescription } = require("./backend/generators/artTemplate/artTemplate");
-    const { buildOfficeDescription } = require("./backend/generators/officeTemplate/officeTemplate");
-
-    function getTemplateDescription(strategyKey, facts) {
-      switch (strategyKey) {
-        case "stationery": case "kids": case "set": case "tech": case "office":
-          return buildOfficeDescription(facts);
-        case "whiteboard-marker":
-          return buildStationeryDescription(facts);
-        case "art":
-          return buildArtDescription(facts);
-        case "book":
-          return buildBookDescription(facts);
-        case "preschool-bag":
-          return buildPreschoolBagDescription(facts);
-        case "bag":
-          return buildBagDescription(facts);
-        default:
-          return buildStationeryDescription(facts);
-      }
-    }
-
-    // Kategori filtresi
-    const filterCategory = normalizeCategory(targetCategory || "");
-    const filtered = products.filter((product) => {
-      if (!filterCategory) return true;
-      const cat = normalizeCategory(getCategorySearchText(product));
-      return cat === filterCategory || cat.includes(filterCategory);
-    });
-
-    if (filtered.length === 0) {
-      return { success: false, message: "Filtreye uyan ürün bulunamadı." };
-    }
-
-    // Üretim döngüsü
-    const results = [];
+    const { list, ctx } = resolveGenerationList(options || {}, targetCategory);
     const approvedDescriptions = [];
+    const results = [];
 
-    for (let i = 0; i < filtered.length; i++) {
-      const product = filtered[i];
-      const facts = extractProductFacts(product);
-      const strategy = getCategoryStrategy(facts);
-      const strategyRules = seoRules.getStrategySeoRules(strategy.key);
-
-      const categoryDescriptions = approvedDescriptions
-        .filter(d => d.strategyKey === strategy.key)
-        .map(d => d.description);
-
-      const description = getTemplateDescription(strategy.key, facts);
-      const plainText = stripHtml(description);
-      const seoTitle = buildSeoTitle(facts.title);
-      const metaDescription = buildMetaDescription(facts);
-      const metaKeywords = buildMetaKeywords(facts);
-      const seoChecklist = buildSeoChecklist(facts.title, facts.keyword, plainText, strategyRules);
-      const passedAllRules = seoChecklist.every(item => item.passed);
-      const { highestSimilarity } = getMostSimilarMatch(description, categoryDescriptions);
-
-      const record = {
-        StokKodu: facts.stockCode,
-        UrunAdi: facts.title,
-        Kategori: facts.category,
-        Marka: facts.brand,
-        SeoBaslik: seoTitle,
-        MetaDescription: metaDescription,
-        MetaKeywords: metaKeywords,
-        UrunAciklamasi: description,
-        Strateji: strategy.key,
-        UretimKaynagi: "local-template",
-        SEOKontrol: { passedAllRules, checklist: seoChecklist },
-        KaliteKontrol: {
-          wordCount: countWords(plainText),
-          highestSimilarity: Number(highestSimilarity.toFixed(2))
-        }
-      };
-
+    for (let i = 0; i < list.length; i++) {
+      const product = list[i];
+      const facts = ctx.extractProductFacts(product);
+      const record = processOneProduct(product, approvedDescriptions, ctx);
       results.push(record);
-      approvedDescriptions.push({ strategyKey: strategy.key, description });
-
-      // Progress bildir
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.webContents.send("generation-progress", {
-          current: i + 1,
-          total: filtered.length,
-          productName: facts.title
-        });
-      }
+      sendProgress(i + 1, list.length, facts.title);
     }
 
-    // Çıktıyı da dosyaya yaz
     const outputDir = path.join(__dirname, "..", "data", "output");
     fs.mkdirSync(outputDir, { recursive: true });
     const outputPath = path.join(outputDir, `cikti-${Date.now()}.json`);
     fs.writeFileSync(outputPath, JSON.stringify(results, null, 2), "utf8");
 
     return { success: true, data: results, outputPath, message: `${results.length} ürün işlendi.` };
-
   } catch (error) {
     return { success: false, message: error.message };
   }

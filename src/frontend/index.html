@@ -88,11 +88,16 @@
       <section class="panel panel-results">
         <div class="results-header">
           <h2>📋 Sonuçlar</h2>
+          <div class="results-list-toolbar" id="resultsListToolbar" style="display: none;">
+            <button type="button" class="btn btn-small btn-primary" id="btnGenerateAll" disabled>
+              Tümünü Üret
+            </button>
+          </div>
           <div class="results-actions" id="resultsActions" style="display: none;">
-            <button class="btn btn-small btn-outline" id="btnCopyAll" title="Tümünü kopyala">
+            <button type="button" class="btn btn-small btn-outline" id="btnCopyAll" title="Tüm satırları kopyala">
               📋 Tümünü Kopyala
             </button>
-            <button class="btn btn-small btn-outline" id="btnExportJson" title="JSON olarak indir">
+            <button type="button" class="btn btn-small btn-outline" id="btnExportJson" title="JSON olarak indir">
               💾 JSON İndir
             </button>
           </div>
@@ -101,8 +106,8 @@
         <div id="resultsArea" class="results-area">
           <div class="empty-state">
             <div class="empty-icon">📭</div>
-            <p class="empty-title">Henüz sonuç yok</p>
-            <p class="empty-subtitle">Soldaki alana bir JSON dosyası sürükleyip üretimi başlat</p>
+            <p class="empty-title">Henüz liste yok</p>
+            <p class="empty-subtitle">Soldan JSON yükleyin; ürünler burada listelenir, satırdan üretim yapabilirsiniz</p>
           </div>
         </div>
       </section>

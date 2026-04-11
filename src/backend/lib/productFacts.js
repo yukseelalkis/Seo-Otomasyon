@@ -281,7 +281,18 @@ function extractProductFacts(product) {
       product.aciklamaHtml ||
       ""
   );
-  const detailsText = stripHtml(detailsHtml);
+  let detailsText = stripHtml(detailsHtml);
+
+  const detayPlain = normalizeSpace(product.Detay || product.detay || "");
+  let aciklamaPlain = normalizeSpace(product.Aciklama || product.aciklama || "");
+  if (aciklamaPlain && (aciklamaPlain.includes("<") || aciklamaPlain.includes("&lt;"))) {
+    aciklamaPlain = normalizeSpace(stripHtml(aciklamaPlain));
+  }
+  const extraParts = [detayPlain, aciklamaPlain].filter(Boolean);
+  if (extraParts.length > 0) {
+    const merged = extraParts.join("\n").trim();
+    detailsText = detailsText ? `${detailsText}\n${merged}`.trim() : merged;
+  }
   const mainCategory = normalizeSpace(product.AnaKategori || product.mainCategory || "");
   const subCategory = normalizeSpace(product.AltKategori || product.subCategory || "");
 

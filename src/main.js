@@ -1,3 +1,5 @@
+require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
+
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
@@ -128,7 +130,7 @@ function filterProducts(products, targetCategory, ctx) {
   });
 }
 
-function processOneProduct(product, approvedDescriptions, ctx) {
+async function processOneProduct(product, approvedDescriptions, ctx) {
   const facts = ctx.extractProductFacts(product);
   const hedefKelime = ctx.normalizeSpace(product.HedefKelime || product.hedefKelime || "") || facts.keyword;
   const urunBasligi = ctx.normalizeSpace(product.UrunBasligi || product.urunBasligi || "") || facts.title;
@@ -141,14 +143,53 @@ function processOneProduct(product, approvedDescriptions, ctx) {
     .filter((d) => d.strategyKey === strategy.key)
     .map((d) => d.description);
 
-  const description = ctx.getTemplateDescription(strategy.key, facts);
+  const templateDescription = ctx.getTemplateDescription(strategy.key, facts);
+  let description = templateDescription;
+  let uretimKaynagi = "local-template";
+  let fallbackReason = null;
+
+  const { isGeminiEnabled, generateHtmlDescription } = require("./backend/lib/geminiClient");
+  const {
+    validateDescription,
+    buildHybridDescription,
+    formatDescriptionToTable,
+    rebalanceKeywordDensity
+  } = require("./backend/lib/descriptionGenerationHelpers");
+
+  const canUseAi = isGeminiEnabled() && strategy.aiRecommended;
+  if (canUseAi) {
+    try {
+      const aiDescription = await generateHtmlDescription(facts, strategy.key, strategyRules.minAiWords);
+      const candidateDescription =
+        strategy.mode === "hybrid" ? buildHybridDescription(templateDescription, aiDescription, facts) : aiDescription;
+      const aiValidation = validateDescription(candidateDescription, factsForSeo, categoryDescriptions, strategyRules);
+      if (aiValidation.passed) {
+        description = candidateDescription;
+        uretimKaynagi = "gemini";
+      } else {
+        uretimKaynagi = "local-fallback";
+        fallbackReason = "AI çıktısı kalite veya benzerlik kontrolünü geçemedi, kategoriye özel şablona dönüldü.";
+      }
+    } catch (error) {
+      uretimKaynagi = "local-fallback";
+      fallbackReason = `Gemini isteği başarısız oldu: ${error.message}`;
+    }
+  }
+
+  if (strategy.key !== "book" && strategy.key !== "art" && strategy.key !== "bag" && strategy.key !== "preschool-bag" && strategy.key !== "office") {
+    description = formatDescriptionToTable(description, factsForSeo);
+  }
+  if (strategy.key !== "preschool-bag") {
+    description = rebalanceKeywordDensity(description, factsForSeo.keyword, strategyRules, strategy.key);
+  }
+
+  const validation = validateDescription(description, factsForSeo, categoryDescriptions, strategyRules);
   const plainText = ctx.stripHtml(description);
   const seoTitle = ctx.buildSeoTitle(factsForSeo.title);
   const metaDescription = ctx.buildMetaDescription(factsForSeo);
   const metaKeywords = ctx.buildMetaKeywords(factsForSeo);
   const seoChecklist = ctx.buildSeoChecklist(factsForSeo.title, factsForSeo.keyword, plainText, strategyRules);
   const passedAllRules = seoChecklist.every((item) => item.passed);
-  const { highestSimilarity } = ctx.getMostSimilarMatch(description, categoryDescriptions);
 
   const record = {
     StokKodu: facts.stockCode,
@@ -162,11 +203,13 @@ function processOneProduct(product, approvedDescriptions, ctx) {
     MetaKeywords: metaKeywords,
     UrunAciklamasi: description,
     Strateji: strategy.key,
-    UretimKaynagi: "local-template",
+    UretimKaynagi: uretimKaynagi,
     SEOKontrol: { passedAllRules, checklist: seoChecklist },
     KaliteKontrol: {
-      wordCount: ctx.countWords(plainText),
-      highestSimilarity: Number(highestSimilarity.toFixed(2))
+      wordCount: validation.wordCount,
+      highestSimilarity: Number(validation.highestSimilarity.toFixed(2)),
+      qualityChecks: validation.qualityChecks,
+      fallbackReason
     }
   };
 
@@ -242,6 +285,97 @@ function sendProgress(current, total, productName) {
 // ============================================================
 
 /**
+ * Ürün kataloğu (iç içe hiyerarşi). data/productCatalog.json
+ */
+ipcMain.handle("get-product-catalog", async () => {
+  try {
+    const catalogPath = path.join(__dirname, "..", "data", "productCatalog.json");
+    if (!fs.existsSync(catalogPath)) {
+      return { success: false, message: "productCatalog.json bulunamadı.", catalog: null };
+    }
+    const raw = fs.readFileSync(catalogPath, "utf8");
+    const catalog = JSON.parse(raw);
+    if (!catalog || typeof catalog !== "object" || Array.isArray(catalog)) {
+      return { success: false, message: "Geçersiz katalog formatı.", catalog: null };
+    }
+    return { success: true, catalog };
+  } catch (error) {
+    return { success: false, message: error.message, catalog: null };
+  }
+});
+
+const TEST_KITAPLARI_PATH = path.join(__dirname, "..", "data", "input", "test_kitaplari.json");
+const MAX_TEST_KITAPLARI_FILTERED = 600;
+
+/** @type {unknown[] | null} */
+let testKitaplariCache = null;
+
+function loadTestKitaplariArray() {
+  if (!fs.existsSync(TEST_KITAPLARI_PATH)) {
+    throw new Error("data/input/test_kitaplari.json bulunamadı.");
+  }
+  if (!testKitaplariCache) {
+    const raw = fs.readFileSync(TEST_KITAPLARI_PATH, "utf8");
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data)) {
+      throw new Error("test_kitaplari.json bir dizi olmalıdır.");
+    }
+    testKitaplariCache = data;
+  }
+  return testKitaplariCache;
+}
+
+function categoryKeyFromProduct(item) {
+  const k = String(item.Kategori ?? item.kategori ?? "").trim();
+  return k === "" ? "__EMPTY__" : k;
+}
+
+ipcMain.handle("get-test-kitaplari-meta", async () => {
+  try {
+    const arr = loadTestKitaplariArray();
+    const catSet = new Set();
+    for (let i = 0; i < arr.length; i++) {
+      catSet.add(categoryKeyFromProduct(arr[i]));
+    }
+    const categories = [...catSet].sort((a, b) => {
+      if (a === "__EMPTY__") return 1;
+      if (b === "__EMPTY__") return -1;
+      return a.localeCompare(b, "tr");
+    });
+    return {
+      success: true,
+      categories,
+      total: arr.length,
+      sourcePath: "data/input/test_kitaplari.json"
+    };
+  } catch (error) {
+    return { success: false, message: error.message, categories: [], total: 0, sourcePath: "" };
+  }
+});
+
+ipcMain.handle("get-test-kitaplari-filtered", async (_event, payload) => {
+  try {
+    const selected = payload && Array.isArray(payload.categories) ? payload.categories : [];
+    if (selected.length === 0) {
+      return { success: true, products: [], totalMatched: 0, truncated: false };
+    }
+    const arr = loadTestKitaplariArray();
+    const wanted = new Set(selected);
+    const filtered = arr.filter((item) => wanted.has(categoryKeyFromProduct(item)));
+    const totalMatched = filtered.length;
+    let products = filtered;
+    let truncated = false;
+    if (products.length > MAX_TEST_KITAPLARI_FILTERED) {
+      products = products.slice(0, MAX_TEST_KITAPLARI_FILTERED);
+      truncated = true;
+    }
+    return { success: true, products, totalMatched, truncated };
+  } catch (error) {
+    return { success: false, message: error.message, products: [], totalMatched: 0, truncated: false };
+  }
+});
+
+/**
  * JSON dosyasını oku; hedef kategoriye göre filtrelenmiş ürün listesini döndür.
  */
 ipcMain.handle("load-json-products", async (_event, options) => {
@@ -284,7 +418,7 @@ ipcMain.handle("generate-at-indices", async (_event, options) => {
       progressStep += 1;
       const product = list[index];
       const facts = ctx.extractProductFacts(product);
-      const record = processOneProduct(product, approvedDescriptions, ctx);
+      const record = await processOneProduct(product, approvedDescriptions, ctx);
       updates.push({ index, record });
       sendProgress(progressStep, totalSteps, facts.title);
     }
@@ -310,7 +444,7 @@ ipcMain.handle("start-generation", async (_event, options) => {
     for (let i = 0; i < list.length; i++) {
       const product = list[i];
       const facts = ctx.extractProductFacts(product);
-      const record = processOneProduct(product, approvedDescriptions, ctx);
+      const record = await processOneProduct(product, approvedDescriptions, ctx);
       results.push(record);
       sendProgress(i + 1, list.length, facts.title);
     }

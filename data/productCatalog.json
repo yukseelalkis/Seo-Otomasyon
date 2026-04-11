@@ -1,0 +1,247 @@
+{
+  "OKUL KIRTASİYE": {
+    "KALEM VE YAZI GEREÇLERİ": [
+      { "isim": "KURŞUN KALEMLER", "anahtar": "kursun", "base_kod": "35.01.01" },
+      { "isim": "KOPYA KALEMİ", "anahtar": "kopya", "base_kod": "35.01.02" },
+      { "isim": "VERSATİ UÇLU KALEMLER", "anahtar": "versatil", "base_kod": "35.01.03" },
+      { "isim": "FOSFORLU KALEMLER", "anahtar": "fosforlu", "base_kod": "35.01.04" },
+      { "isim": "KEÇELİ KALEMLER", "anahtar": "keçeli", "base_kod": "35.01.05" },
+      { "isim": "KALEM TUTACAĞI", "anahtar": "tutacak", "base_kod": "35.01.09" },
+      { "isim": "UÇLAR", "anahtar": "uclar", "base_kod": "35.01.10" },
+      { "isim": "KALEM SETLERİ", "anahtar": "kursunset", "base_kod": "35.01.11" },
+      { "isim": "KURŞUN PAKET", "anahtar": "kursunpaket", "base_kod": "35.01.12" }
+    ],
+    "SİLGİ GEREÇLERİ": [
+      { "isim": "TAHTA SİLGİSİ", "anahtar": "tahtasilgi", "base_kod": "35.02.01" },
+      { "isim": "SİLGİ SET", "anahtar": "silgiset", "base_kod": "35.02.02" },
+      { "isim": "SİLGİ", "anahtar": "silgi", "base_kod": "35.02.03" }
+    ],
+    "KALEMTRAŞ GEREÇLERİ": [
+      { "isim": "KALEMTIRAŞ", "anahtar": "kalemtıras", "base_kod": "35.03.01" },
+      { "isim": "MASA ÜSTÜ KALEMTRAŞ", "anahtar": "masakalemtiras", "base_kod": "35.03.02" }
+    ],
+    "BOYA ÜRÜNLERİ": [
+      { "isim": "KEÇELİ KALEM SET", "anahtar": "keceliset", "base_kod": "35.04.01" },
+      { "isim": "KURU BOYA", "anahtar": "kuruboya", "base_kod": "35.04.02" },
+      { "isim": "PASTEL BOYA", "anahtar": "pastelboya", "base_kod": "35.04.03" },
+      { "isim": "SULU BOYA", "anahtar": "suluboya", "base_kod": "35.04.04" },
+      { "isim": "PARMAK BOYASI", "anahtar": "parmakboya", "base_kod": "35.04.05" },
+      { "isim": "MUM BOYA", "anahtar": "mumboya", "base_kod": "35.04.06" },
+      { "isim": "YÜZ BOYASI", "anahtar": "yuz boya", "base_kod": "35.04.07" }
+    ],
+    "DEFTERLER": [
+      { "isim": "GÜZEL YAZI DEFTERİ", "anahtar": "guzel", "base_kod": "35.05.01" },
+      { "isim": "MÜZİK DEFTERİ", "anahtar": "müzik", "base_kod": "35.05.02" },
+      { "isim": "RESİM DEFTERİ", "anahtar": "resim", "base_kod": "35.05.03" },
+      { "isim": "KARELİ DEFTER", "anahtar": "kareli", "base_kod": "35.05.04" },
+      { "isim": "ÇİZGİLİ DEFTER", "anahtar": "çizgili", "base_kod": "35.05.05" },
+      { "isim": "DUZ", "anahtar": "duz", "base_kod": "35.05.06" },
+      { "isim": "BUTİK DEFTER", "anahtar": "butik", "base_kod": "35.05.07" },
+      { "isim": "GÜNLÜK DEFTERİ", "anahtar": "günlük", "base_kod": "35.05.08" },
+      { "isim": "HATIRA DEFTERİ", "anahtar": "hatıra", "base_kod": "35.05.09" },
+      { "isim": "NOT DEFTERLERİ", "anahtar": "notdefter", "base_kod": "35.05.10" },
+      { "isim": "BLOKNOT DEFTERLERİ", "anahtar": "bloknot", "base_kod": "35.05.11" },
+      { "isim": "KİTAP KAPLARI", "anahtar": "kaplama", "base_kod": "35.05.12" },
+      { "isim": "ETİKET", "anahtar": "etiket", "base_kod": "35.05.13" },
+      { "isim": "ELİŞİ ETKİNLİK KAĞITLARI", "anahtar": "elisi", "base_kod": "35.05.14" },
+      { "isim": "ATELYE LAB. DEFTER", "anahtar": "atelye", "base_kod": "35.05.15" }
+    ],
+    "ÖLÇÜ VE ÇİZİM GEREÇLERİ": [
+      { "isim": "ÖLÇÜ VE ÇİZİM GEREÇLERİ", "anahtar": "olcu", "base_kod": "35.06.01" }
+    ],
+    "OYUN HAMURLARI": [
+      { "isim": "OYUN HAMURLARI", "anahtar": "oyunhamuru", "base_kod": "35.07.01" }
+    ],
+    "FON VE KARTONLAR": [
+      { "isim": "FON VE KARTONLAR", "anahtar": "fon ve kartonlar", "base_kod": "35.08.01" }
+    ],
+    "ÇANTALAR": [
+      { "isim": "KALEM ÇANTALARI", "anahtar": "kalemlik", "base_kod": "35.09.01" },
+      { "isim": "BESLENME ÇANTALARI", "anahtar": "beslenme", "base_kod": "35.09.02" },
+      { "isim": "OKUL ÇANTALARI", "anahtar": "sirtcanta", "base_kod": "35.09.03" },
+      { "isim": "MATARALAR", "anahtar": "matara", "base_kod": "35.09.04" },
+      { "isim": "ÇANTA KİLİT", "anahtar": "kilit", "base_kod": "35.09.05" },
+      { "isim": "YEMEK KUTULARI", "anahtar": "yemekkutu", "base_kod": "35.09.06" }
+    ],
+    "SINIF SETLERİ": [
+      { "isim": "ANAOKUL KIRTASİYE SETLERİ", "anahtar": "anaokul", "base_kod": "35.10.01" },
+      { "isim": "1.SINIF KIRTASİYE SETLERİ", "anahtar": "1.sınıf", "base_kod": "35.10.02" },
+      { "isim": "2.SINIF KIRTASİYE SETLERİ", "anahtar": "2.sınıf", "base_kod": "35.10.03" },
+      { "isim": "3.SINIF KIRTASİYE SETLERİ", "anahtar": "3.sınıf", "base_kod": "35.10.04" },
+      { "isim": "4.SINIF KIRTASİYE SETLERİ", "anahtar": "4.sınıf", "base_kod": "35.10.05" },
+      { "isim": "5.SINIF KIRTASİYE SETLERİ", "anahtar": "5.sınıf", "base_kod": "35.10.06" },
+      { "isim": "6.SINIF KIRTASİYE SETLERİ", "anahtar": "6.sınıf", "base_kod": "35.10.07" },
+      { "isim": "7.SINIF KIRTASİYE SETLERİ", "anahtar": "7.sınıf", "base_kod": "35.10.08" },
+      { "isim": "8.SINIF KIRTASİYE SETLERİ", "anahtar": "8.sınıf", "base_kod": "35.10.09" }
+    ],
+    "SAYI GEREÇLERİ": [
+      { "isim": "SAYI GEREÇLERİ", "anahtar": "sayigerec", "base_kod": "35.11.01" }
+    ],
+    "OKUL KIRTASİYE MALZEMELERİ": [
+      { "isim": "OKUL KIRTASİYE MALZEMELERİ", "anahtar": "okmlz", "base_kod": "35.12.01" }
+    ],
+    "OKUL MAKAS": [
+      { "isim": "OKUL MAKAS", "anahtar": "okulmakas", "base_kod": "35.13.01" }
+    ]
+  },
+  "OFİS KIRTASİYE": {
+    "OFİS KALEMLERİ": [
+      { "isim": "LAZER KALEM", "anahtar": "lazer", "base_kod": "25.01.01" },
+      { "isim": "PRESTİJ KALEMLER", "anahtar": "prestij", "base_kod": "25.01.02" },
+      { "isim": "TUKENMEZ KALEM", "anahtar": "tukenmez", "base_kod": "25.01.03" },
+      { "isim": "FİNİLİER KALEMLER", "anahtar": "finiler", "base_kod": "25.01.04" },
+      { "isim": "ÇOK AMAÇLI KALEMLER", "anahtar": "çokamaçlı", "base_kod": "25.01.05" },
+      { "isim": "JEL KALEMLER", "anahtar": "jel", "base_kod": "25.01.06" },
+      { "isim": "ROLLER KALEMLER", "anahtar": "roller", "base_kod": "25.01.07" },
+      { "isim": "FIRÇA UÇLU KALEMLER", "anahtar": "fırcauclu", "base_kod": "25.01.08" },
+      { "isim": "DOLMA KALEM", "anahtar": "dolma", "base_kod": "25.01.09" },
+      { "isim": "MARKER KALEMLER", "anahtar": "marker", "base_kod": "25.01.10" },
+      { "isim": "TAHTA KALEM VE GEREÇLERİ", "anahtar": "tahtakalem", "base_kod": "25.01.11" },
+      { "isim": "OFİS KEÇELİ KALEM", "anahtar": "ofiskeceli", "base_kod": "25.01.12" },
+      { "isim": "TÜKENMEZ KALEM SET", "anahtar": "tukenmezset", "base_kod": "25.01.13" },
+      { "isim": "ASETAT KALEM", "anahtar": "asetat", "base_kod": "25.01.14" }
+    ],
+    "YAPIŞTIRICILAR": [
+      { "isim": "STİCK YAPIŞTIRICILAR", "anahtar": "stick", "base_kod": "25.02.01" },
+      { "isim": "BANTLAR", "anahtar": "bant", "base_kod": "25.02.02" },
+      { "isim": "SIVI YAPIŞTIRICILAR", "anahtar": "sivi", "base_kod": "25.02.03" },
+      { "isim": "HAMUR YAPIŞTIRICILAR", "anahtar": "hamur", "base_kod": "25.02.04" },
+      { "isim": "SICAK SİLİKON", "anahtar": "silikon", "base_kod": "25.02.05" }
+    ],
+    "ZIMBA VE DELGEÇ": [
+      { "isim": "ZIMBALAR", "anahtar": "zimba", "base_kod": "25.04.01" },
+      { "isim": "DELGEÇLER", "anahtar": "delgec", "base_kod": "25.04.02" }
+    ],
+    "BÜYÜTEÇLER": [
+      { "isim": "BÜYÜTEÇ", "anahtar": "buyutec", "base_kod": "25.04.03" }
+    ],
+    "MAKAS VE KESİCİ ALETLER": [
+      { "isim": "MAKAS", "anahtar": "makas", "base_kod": "25.04.04" }
+    ],
+    "TERMOMETRE": [
+      { "isim": "TERMOMETRE", "anahtar": "termometre", "base_kod": "25.04.05" }
+    ],
+    "PUSULA": [
+      { "isim": "PUSULA", "anahtar": "pusula", "base_kod": "25.04.06" }
+    ],
+    "DOSYA VE KLASÖRLER": [
+      { "isim": "KLASÖRLER", "anahtar": "klasor", "base_kod": "25.08.01" },
+      { "isim": "TELLİ DOSYA", "anahtar": "tellidosya", "base_kod": "25.08.02" },
+      { "isim": "POŞET DOSYA", "anahtar": "posetdosya", "base_kod": "25.08.03" },
+      { "isim": "ÇIT ÇIT DOSYA", "anahtar": "citcitdosya", "base_kod": "25.08.04" },
+      { "isim": "POST-İT", "anahtar": "postit", "base_kod": "25.08.05" },
+      { "isim": "MAGAZİNLİK", "anahtar": "magazin", "base_kod": "25.08.06" },
+      { "isim": "SUNUM DOSYASI", "anahtar": "sunum", "base_kod": "25.08.07" }
+    ],
+    "ÇANTALAR": [
+      { "isim": "EL ÇANTALARI", "anahtar": "elcanta", "base_kod": "25.09.01" },
+      { "isim": "TEKNİK ÇİZİM ÇANTALARI", "anahtar": "teknikcanta", "base_kod": "25.09.02" }
+    ],
+    "MUHTELİF OFİS MALZEMELERİ": [
+      { "isim": "MUHTELİF OFİS MALZEMELERİ", "anahtar": "ofismalzeme", "base_kod": "25.10.01" },
+      { "isim": "HESAP MAKİNASI", "anahtar": "hesapmak", "base_kod": "25.10.02" }
+    ]
+  },
+  "SANATSAL MALZEMELER": {
+    "BOYA KALEMLERİ": [
+      { "isim": "FIRÇA UÇLU KALEMLER", "anahtar": "fircauclu", "base_kod": "10.01.01" },
+      { "isim": "AQUARELL BOYA KALEMLERİ", "anahtar": "aquarellkalem", "base_kod": "10.01.02" },
+      { "isim": "KURU BOYA KALEMLERİ", "anahtar": "kuruboyakalem", "base_kod": "10.01.03" },
+      { "isim": "PASTEL BOYA KALEMLERİ", "anahtar": "pastelboyakalem", "base_kod": "10.01.04" },
+      { "isim": "MARKÖR KALEMLER", "anahtar": "markorkalem", "base_kod": "10.01.05" }
+    ],
+    "BOYA YARDIMCI MALZEMELER": [
+      { "isim": "BOYA YARDIMCI MALZEMELER", "anahtar": "boyayrdmlz", "base_kod": "10.02.01" }
+    ],
+    "BOYA ZEMİNLERİ": [
+      { "isim": "ÇİZİM BLOKNOTLARI", "anahtar": "cizimblokot", "base_kod": "10.03.01" },
+      { "isim": "TUVALLER", "anahtar": "cizimtuval", "base_kod": "10.03.02" }
+    ],
+    "ŞÖVALE": [
+      { "isim": "SÖVALE", "anahtar": "sovale", "base_kod": "10.03.03" }
+    ],
+    "FIRÇALAR": [
+      { "isim": "SULUBOYA FIRÇALARI", "anahtar": "sulufirca", "base_kod": "10.04.01" },
+      { "isim": "ŞABLON VE PONPON FIRÇALAR", "anahtar": "ponponfirca", "base_kod": "10.04.02" },
+      { "isim": "AKRİLİK BOYA FIRÇALARI", "anahtar": "akrilikfirca", "base_kod": "10.04.03" },
+      { "isim": "YAĞLI BOYA FIRÇALARI", "anahtar": "yaglifirca", "base_kod": "10.04.04" },
+      { "isim": "YAĞLI/AKRİLİK BOYA FIRÇALARI", "anahtar": "yagliakrilikfirca", "base_kod": "10.04.05" },
+      { "isim": "ÇOK AMAÇLI FIRÇA", "anahtar": "cokamacfirca", "base_kod": "10.04.06" }
+    ],
+    "GRAFİK VE ÇİZİM KALEMLERİ": [
+      { "isim": "ÇİZİM MARKERLERİ", "anahtar": "cizimkalem", "base_kod": "10.05.01" },
+      { "isim": "FÜZEN KALEMLER", "anahtar": "fuzenkalem", "base_kod": "10.05.02" },
+      { "isim": "KAĞIT KALEMLER", "anahtar": "kagitkalem", "base_kod": "10.05.03" },
+      { "isim": "DERECELİ KALEMLERİ", "anahtar": "derecelikalem", "base_kod": "10.05.04" },
+      { "isim": "KÖMÜR KALEMLER", "anahtar": "komurkalem", "base_kod": "10.05.05" },
+      { "isim": "MANGA KALEM SETLERİ", "anahtar": "mangakalem", "base_kod": "10.05.06" },
+      { "isim": "PARMANET VE MARKÖRLER", "anahtar": "parmanent", "base_kod": "10.05.07" },
+      { "isim": "KALİGRAFİ VE İMZA KALEMLERİ", "anahtar": "imza", "base_kod": "10.05.08" }
+    ],
+    "SANATSAL BOYALAR": [
+      { "isim": "AKRİLİK BOYALAR", "anahtar": "akrilikboya", "base_kod": "10.06.01" },
+      { "isim": "BOYUTLU BOYALAR", "anahtar": "boyutluboya", "base_kod": "10.06.02" },
+      { "isim": "GUAJ BOYALAR", "anahtar": "guajboya", "base_kod": "10.06.03" },
+      { "isim": "CAM BOYALARI", "anahtar": "camboya", "base_kod": "10.06.04" },
+      { "isim": "SPREY BOYALAR", "anahtar": "spreyboya", "base_kod": "10.06.05" },
+      { "isim": "SULU BOYALAR", "anahtar": "suluboyas", "base_kod": "10.06.06" },
+      { "isim": "KUMAŞ BAYALARI", "anahtar": "kumasboya", "base_kod": "10.06.07" },
+      { "isim": "EBRU BOYALARI", "anahtar": "ebruboya", "base_kod": "10.06.08" },
+      { "isim": "YAĞLI BOYA", "anahtar": "yagliboya", "base_kod": "10.06.09" },
+      { "isim": "AHŞAP BOYA", "anahtar": "ahsapboya", "base_kod": "10.06.10" }
+    ],
+    "SERAMİK MALZEMELERİ": [
+      { "isim": "KİL", "anahtar": "kil", "base_kod": "10.07.01" }
+    ],
+    "DİĞER MALZEMELER": [
+      { "isim": "DİĞER MALZEMELER", "anahtar": "digermlz", "base_kod": "10.08.01" }
+    ],
+    "SANATSAL KAĞIT": [
+      { "isim": "SULU BOYA DEFTER VE BLOKLARI", "anahtar": "suluboyadefter", "base_kod": "10.09.01" },
+      { "isim": "MARKER PAD VE DEFTERLERİ", "anahtar": "markerpad", "base_kod": "10.09.02" },
+      { "isim": "PASTEL KAĞIT VE BLOKLARI", "anahtar": "pastelkagit", "base_kod": "10.09.03" },
+      { "isim": "ESKİZ ÇİZİM DEFTERLERİ", "anahtar": "eskizdefter", "base_kod": "10.09.04" },
+      { "isim": "ÇOK AMAÇLI DEFTERLER", "anahtar": "cokamacli", "base_kod": "10.09.05" },
+      { "isim": "YAĞLI BOYA KAĞIT VE BLOKLARI", "anahtar": "yagliboyakagit", "base_kod": "10.09.06" },
+      { "isim": "AKRİLİK BOYA DEFTERLERİ", "anahtar": "akrilikdefter", "base_kod": "10.09.07" },
+      { "isim": "TEKNİK ÇİZİM DEFTER VE BLOKLARI", "anahtar": "teknikdefter", "base_kod": "10.09.08" },
+      { "isim": "SULU BOYA KAĞIDI", "anahtar": "suluboyakagit", "base_kod": "10.09.09" }
+    ]
+  },
+  "HOBİ&YAŞAM": {
+    "HOBİ": [
+      { "isim": "PUZZLE", "anahtar": "puzzle", "base_kod": "15.01.01" },
+      { "isim": "DART", "anahtar": "dart", "base_kod": "15.01.02" },
+      { "isim": "LEGO", "anahtar": "lego", "base_kod": "15.01.03" },
+      { "isim": "OYUNLAR", "anahtar": "oyunlar", "base_kod": "15.01.04" },
+      { "isim": "KASA", "anahtar": "kasa", "base_kod": "15.01.05" },
+      { "isim": "ANAHTARLIK", "anahtar": "anahtarlik", "base_kod": "15.01.06" },
+      { "isim": "HEDİYE KUTULARI", "anahtar": "hkutusu", "base_kod": "15.01.07" }
+    ],
+    "DENEY": [
+      { "isim": "DENEYLER", "anahtar": "deney", "base_kod": "15.02.01" }
+    ],
+    "SPOR TOPLARI": [
+      { "isim": "SPOR TOPLARI", "anahtar": "sportop", "base_kod": "15.03.01" }
+    ],
+    "MÜZİK ALET": [
+      { "isim": "MÜZİK ALET", "anahtar": "muzikalet", "base_kod": "15.04.01" }
+    ]
+  },
+  "TEKNOLOJİ": {
+    "ELEKTRİK": [
+      { "isim": "ELEKTRİK", "anahtar": "elektrik", "base_kod": "10.01.01" }
+    ],
+    "ELEKTRONİK": [
+      { "isim": "ELEKTRONİK", "anahtar": "elektronik", "base_kod": "10.02.01" }
+    ]
+  },
+  "LİSANSLI ÜRÜNLER": {
+    "KIRTASİYE": [
+      { "isim": "KIRTASİYE", "anahtar": "lisanskirtasiye", "base_kod": "45.01.01" }
+    ],
+    "DEKORATİF ÜRÜNLER": [
+      { "isim": "DEKORATİF ÜRÜNLER", "anahtar": "lisansdekor", "base_kod": "45.02.01" }
+    ]
+  }
+}

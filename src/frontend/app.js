@@ -2,12 +2,17 @@
 // SEO Otomasyon — Frontend (liste, accordion, üretim, kopyala)
 // ============================================================
 
-const dropZone = document.getElementById("dropZone");
-const fileInput = document.getElementById("fileInput");
-const selectedFileBox = document.getElementById("selectedFileBox");
 const selectedFileName = document.getElementById("selectedFileName");
 const selectedFileSize = document.getElementById("selectedFileSize");
-const btnRemoveFile = document.getElementById("btnRemoveFile");
+const btnClearAktifGirdi = document.getElementById("btnClearAktifGirdi");
+const aktifGirdiWrap = document.getElementById("aktifGirdiWrap");
+const aktifGirdiPlaceholder = document.getElementById("aktifGirdiPlaceholder");
+const aktifUrunDetay = document.getElementById("aktifUrunDetay");
+const testKitaplariMetaHint = document.getElementById("testKitaplariMetaHint");
+const kategoriCheckboxList = document.getElementById("kategoriCheckboxList");
+const katalogListEmpty = document.getElementById("katalogListEmpty");
+const katalogListToolbar = document.getElementById("katalogListToolbar");
+const katalogListWrap = document.getElementById("katalogListWrap");
 const btnGenerate = document.getElementById("btnGenerate");
 const btnGenerateAll = document.getElementById("btnGenerateAll");
 const targetCategoryInput = document.getElementById("targetCategory");
@@ -25,6 +30,236 @@ const statFail = document.getElementById("statFail");
 const btnCopyAll = document.getElementById("btnCopyAll");
 const btnExportJson = document.getElementById("btnExportJson");
 const toast = document.getElementById("toast");
+
+const panelAciklama = document.getElementById("panelAciklama");
+const btnAciklamaUret = document.getElementById("btnAciklamaUret");
+const catalogMeta = document.getElementById("catalogMeta");
+const addAnaGrup = document.getElementById("addAnaGrup");
+const addUstGrup = document.getElementById("addUstGrup");
+const addOzellik = document.getElementById("addOzellik");
+const addAnahtarInput = document.getElementById("addAnahtarInput");
+const addBaseKod = document.getElementById("addBaseKod");
+const addUrunAdi = document.getElementById("addUrunAdi");
+const addMarka = document.getElementById("addMarka");
+const addStokKodu = document.getElementById("addStokKodu");
+const btnCopyStokDraft = document.getElementById("btnCopyStokDraft");
+const btnUretStokKodu = document.getElementById("btnUretStokKodu");
+const btnAddUrunQueue = document.getElementById("btnAddUrunQueue");
+const btnSyncToAciklama = document.getElementById("btnSyncToAciklama");
+const urunQueueEmpty = document.getElementById("urunQueueEmpty");
+const urunQueueTable = document.getElementById("urunQueueTable");
+const urunQueueBody = document.getElementById("urunQueueBody");
+
+/** @type {Record<string, Record<string, { isim: string, anahtar: string, base_kod: string }[]>>} */
+let productCatalog = {};
+/** @type {{ StokKodu: string, UrunAdi: string, ANAHTAR: string, payload: Record<string, unknown> }[]} */
+let urunQueue = [];
+/** @type {(string|null)[]} */
+let slotPhotos = [null, null, null];
+
+/** test_kitaplari.json IPC filtresinden gelen son liste */
+/** @type {Record<string, unknown>[]} */
+let testKitaplariFiltered = [];
+let testKitaplariFilterDebounce = null;
+
+const KATEGORI_EMPTY_KEY = "__EMPTY__";
+
+function categoryCheckboxLabel(key) {
+  return key === KATEGORI_EMPTY_KEY ? "Kategori belirtilmemiş" : key;
+}
+
+function sanitizeProductDeep(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function htmlToPlainPreview(html, maxLen) {
+  if (!html) return "—";
+  const d = document.createElement("div");
+  d.innerHTML = String(html);
+  const t = (d.textContent || "").replace(/\s+/g, " ").trim();
+  if (!t) return "—";
+  return t.length > maxLen ? `${t.slice(0, maxLen)}…` : t;
+}
+
+function displayValueFlat(obj, key) {
+  const v = obj[key];
+  if (v === undefined || v === null || v === "") return "";
+  return String(v);
+}
+
+function showAktifGirdiUi(titleLine, subLine, rawProduct) {
+  if (aktifGirdiPlaceholder) aktifGirdiPlaceholder.style.display = "none";
+  if (aktifGirdiWrap) aktifGirdiWrap.hidden = false;
+  if (selectedFileName) selectedFileName.textContent = titleLine;
+  if (selectedFileSize) selectedFileSize.textContent = subLine;
+  if (aktifUrunDetay) {
+    if (!rawProduct) {
+      aktifUrunDetay.innerHTML = "";
+      return;
+    }
+    const kat = String(rawProduct.Kategori ?? rawProduct.kategori ?? "").trim() || "—";
+    const marka = String(rawProduct.Marka ?? rawProduct.marka ?? "—");
+    const det =
+      rawProduct.Detay ??
+      rawProduct.detay ??
+      rawProduct.Aciklama ??
+      rawProduct.aciklama ??
+      rawProduct.details ??
+      "";
+    const aciklamaHtml = rawProduct.AciklamaHtml ?? rawProduct.aciklamaHtml ?? "";
+    const detStr = det ? String(det) : "";
+    const detPreview = detStr
+      ? detStr.length > 500
+        ? `${detStr.slice(0, 500)}…`
+        : detStr
+      : htmlToPlainPreview(aciklamaHtml, 400);
+    aktifUrunDetay.innerHTML = `
+      <dl class="aktif-urun-dl">
+        <dt>Kategori</dt><dd>${escapeHtml(kat)}</dd>
+        <dt>Marka</dt><dd>${escapeHtml(marka)}</dd>
+        <dt>Detay / açıklama özeti</dt><dd>${escapeHtml(detPreview)}</dd>
+      </dl>`;
+  }
+}
+
+function clearAktifGirdiUi() {
+  sourceProducts = [];
+  selectedFilePath = null;
+  if (aktifGirdiWrap) aktifGirdiWrap.hidden = true;
+  if (aktifGirdiPlaceholder) aktifGirdiPlaceholder.style.display = "";
+  if (aktifUrunDetay) aktifUrunDetay.innerHTML = "";
+  productRows = [];
+  progressSection.style.display = "none";
+  resultsListToolbar.style.display = "none";
+  renderProductList();
+  refreshBusyUi();
+  setStatus("Hazır");
+}
+
+async function activateProductForAciklama(rawProduct) {
+  sourceProducts = [sanitizeProductDeep(rawProduct)];
+  selectedFilePath = null;
+  const name = String(rawProduct.UrunAdi ?? rawProduct.urunAdi ?? "Ürün");
+  const stok = String(rawProduct.StokKodu ?? rawProduct.stokKodu ?? "—");
+  if (targetCategoryInput) {
+    targetCategoryInput.value = String(rawProduct.Kategori ?? rawProduct.kategori ?? "").trim();
+  }
+  showAktifGirdiUi(name, stok, rawProduct);
+  setStatus("Yükleniyor...", "running");
+  await reloadProductsFromSource();
+  setStatus("Hazır");
+  panelAciklama?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  if (btnGenerate) btnGenerate.focus();
+  showToast("Ürün üretim girdisine aktarıldı");
+}
+
+function getSelectedCategoryKeys() {
+  if (!kategoriCheckboxList) return [];
+  return [...kategoriCheckboxList.querySelectorAll('input[type="checkbox"]:checked')].map((c) => c.value);
+}
+
+function scheduleRefreshKatalogList() {
+  if (testKitaplariFilterDebounce) clearTimeout(testKitaplariFilterDebounce);
+  testKitaplariFilterDebounce = setTimeout(() => {
+    void refreshKatalogList();
+  }, 150);
+}
+
+async function refreshKatalogList() {
+  if (!katalogListEmpty || !katalogListWrap) return;
+  const keys = getSelectedCategoryKeys();
+  katalogListWrap.hidden = true;
+  if (katalogListToolbar) katalogListToolbar.hidden = true;
+  if (keys.length === 0) {
+    katalogListEmpty.style.display = "";
+    katalogListEmpty.textContent = "Lütfen kategori seçin.";
+    testKitaplariFiltered = [];
+    return;
+  }
+  katalogListEmpty.style.display = "";
+  katalogListEmpty.textContent = "Yükleniyor…";
+  if (!window.api?.getTestKitaplariFiltered) {
+    katalogListEmpty.textContent = "IPC kullanılamıyor.";
+    return;
+  }
+  const res = await window.api.getTestKitaplariFiltered(keys);
+  if (!res.success) {
+    katalogListEmpty.textContent = res.message || "Liste alınamadı";
+    testKitaplariFiltered = [];
+    return;
+  }
+  testKitaplariFiltered = Array.isArray(res.products) ? res.products : [];
+  katalogListEmpty.style.display = "none";
+  if (katalogListToolbar) {
+    if (res.truncated) {
+      katalogListToolbar.hidden = false;
+      katalogListToolbar.textContent = `İlk ${res.products.length} ürün gösteriliyor (toplam eşleşen: ${res.totalMatched}).`;
+    } else {
+      katalogListToolbar.hidden = true;
+      katalogListToolbar.textContent = "";
+    }
+  }
+  katalogListWrap.innerHTML = testKitaplariFiltered
+    .map(
+      (p, i) => `
+    <div class="katalog-card" data-katalog-idx="${i}">
+      <div class="katalog-card-title">${escapeHtml(displayValueFlat(p, "UrunAdi") || "—")}</div>
+      <div class="katalog-card-meta">${escapeHtml(displayValueFlat(p, "StokKodu") || "—")} · ${escapeHtml(
+        displayValueFlat(p, "Kategori") || "—"
+      )}</div>
+      <button type="button" class="btn btn-small btn-primary btn-katalog-sec" data-katalog-idx="${i}">Açıklama üretimine aktar</button>
+    </div>`
+    )
+    .join("");
+  katalogListWrap.hidden = testKitaplariFiltered.length === 0;
+  if (testKitaplariFiltered.length === 0) {
+    katalogListEmpty.style.display = "";
+    katalogListEmpty.textContent = "Seçilen kategorilerde ürün yok.";
+  }
+}
+
+async function initTestKitaplariPanel() {
+  if (!kategoriCheckboxList || !testKitaplariMetaHint) return;
+  if (!window.api?.getTestKitaplariMeta) {
+    testKitaplariMetaHint.textContent = "Katalog IPC kullanılamıyor.";
+    return;
+  }
+  try {
+    const res = await window.api.getTestKitaplariMeta();
+    if (!res.success) {
+      testKitaplariMetaHint.textContent = res.message || "Meta yüklenemedi.";
+      return;
+    }
+    testKitaplariMetaHint.textContent = `Kaynak: ${res.sourcePath || "data/input/test_kitaplari.json"} · ${
+      res.total
+    } kayıt · ${res.categories?.length ?? 0} kategori.`;
+    kategoriCheckboxList.innerHTML = "";
+    const cats = res.categories || [];
+    for (let c = 0; c < cats.length; c++) {
+      const catKey = cats[c];
+      const safeId = `kat_${c}_${String(catKey).replace(/[^a-zA-Z0-9_]/g, "_")}`;
+      const label = document.createElement("label");
+      label.className = "kategori-checkbox-item";
+      label.htmlFor = safeId;
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = safeId;
+      cb.value = catKey;
+      cb.addEventListener("change", scheduleRefreshKatalogList);
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(` ${categoryCheckboxLabel(catKey)}`));
+      kategoriCheckboxList.appendChild(label);
+    }
+  } catch (e) {
+    testKitaplariMetaHint.textContent = e.message || "Katalog hatası.";
+  }
+}
+
+function getCeto() {
+  const C = globalThis.CetoStockCode;
+  if (!C) throw new Error("CetoStockCode yüklenemedi.");
+  return C;
+}
 
 /** Electron'da varsa tam yol (opsiyonel); liste/üretim için zorunlu değil */
 /** @type {string|null} */
@@ -170,6 +405,470 @@ function updateStatsFromRows() {
 }
 
 // ============================================================
+// Ürün Ekle + Kategori / CETO (tek sayfa)
+// ============================================================
+
+function hasValidDraftStok() {
+  const v = addStokKodu ? addStokKodu.value.trim() : "";
+  return Boolean(v && v !== "KOD YOK");
+}
+
+function updateAciklamaUretButtonState() {
+  if (btnAciklamaUret) {
+    btnAciklamaUret.disabled = !hasValidDraftStok();
+  }
+}
+
+function parseProductCatalogJsonText(text) {
+  const parsed = JSON.parse(text);
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("Katalog kök nesne olmalıdır.");
+  }
+  const anaKeys = Object.keys(parsed);
+  for (let a = 0; a < anaKeys.length; a++) {
+    const ag = anaKeys[a];
+    const sub = parsed[ag];
+    if (!sub || typeof sub !== "object" || Array.isArray(sub)) {
+      throw new Error(`Geçersiz alt yapı: ${ag}`);
+    }
+    const ustKeys = Object.keys(sub);
+    for (let u = 0; u < ustKeys.length; u++) {
+      const ug = ustKeys[u];
+      const arr = sub[ug];
+      if (!Array.isArray(arr)) {
+        throw new Error(`Üst grup dizi olmalı: ${ag} › ${ug}`);
+      }
+      for (let k = 0; k < arr.length; k++) {
+        const it = arr[k];
+        if (!it || typeof it !== "object") {
+          throw new Error(`Geçersiz öğe: ${ag} › ${ug} [${k}]`);
+        }
+        if (it.isim == null || it.anahtar == null || it.base_kod == null) {
+          throw new Error(`Öğede isim, anahtar, base_kod zorunlu: ${ag} › ${ug}`);
+        }
+      }
+    }
+  }
+  return parsed;
+}
+
+function setCatalogMeta(text) {
+  if (catalogMeta) catalogMeta.textContent = text;
+}
+
+function countCatalogLeaves(catalog) {
+  let n = 0;
+  const ana = Object.keys(catalog || {});
+  for (let i = 0; i < ana.length; i++) {
+    const sub = catalog[ana[i]];
+    if (!sub || typeof sub !== "object") continue;
+    const ust = Object.keys(sub);
+    for (let j = 0; j < ust.length; j++) {
+      const arr = sub[ust[j]];
+      if (Array.isArray(arr)) n += arr.length;
+    }
+  }
+  return n;
+}
+
+function applyProductCatalog(catalog) {
+  productCatalog =
+    catalog && typeof catalog === "object" && !Array.isArray(catalog) ? catalog : {};
+  const anaCount = Object.keys(productCatalog).length;
+  const leafCount = countCatalogLeaves(productCatalog);
+  setCatalogMeta(anaCount ? `${anaCount} ana grup, ${leafCount} özellik` : "Boş — JSON yükleyin");
+  populateAnaGrupSelect();
+  populateUstGrupSelect();
+  populateOzellikSelect();
+  syncOzellikFieldsFromSelection();
+}
+
+function uniqueSorted(values) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b), "tr"));
+}
+
+function populateAnaGrupSelect() {
+  if (!addAnaGrup) return;
+  const prev = addAnaGrup.value;
+  addAnaGrup.innerHTML = "";
+  const ana = uniqueSorted(Object.keys(productCatalog));
+  ana.forEach((a) => {
+    const o = document.createElement("option");
+    o.value = a;
+    o.textContent = a;
+    addAnaGrup.appendChild(o);
+  });
+  if (prev && ana.includes(prev)) addAnaGrup.value = prev;
+  else if (ana[0]) addAnaGrup.value = ana[0];
+}
+
+function populateUstGrupSelect() {
+  if (!addUstGrup || !addAnaGrup) return;
+  const ana = addAnaGrup.value;
+  const prev = addUstGrup.value;
+  addUstGrup.innerHTML = "";
+  const sub = productCatalog[ana];
+  const ust = sub && typeof sub === "object" ? uniqueSorted(Object.keys(sub)) : [];
+  ust.forEach((u) => {
+    const o = document.createElement("option");
+    o.value = u;
+    o.textContent = u;
+    addUstGrup.appendChild(o);
+  });
+  if (prev && ust.includes(prev)) addUstGrup.value = prev;
+  else if (ust[0]) addUstGrup.value = ust[0];
+}
+
+function populateOzellikSelect() {
+  if (!addOzellik || !addAnaGrup || !addUstGrup) return;
+  const ana = addAnaGrup.value;
+  const ust = addUstGrup.value;
+  addOzellik.innerHTML = "";
+  const sub = productCatalog[ana];
+  const items = sub && sub[ust];
+  if (!Array.isArray(items)) return;
+  for (let i = 0; i < items.length; i++) {
+    const row = items[i];
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = row.isim != null ? String(row.isim) : "";
+    addOzellik.appendChild(o);
+  }
+}
+
+/**
+ * @returns {{ anaGrup: string, ustGrup: string, item: { isim: string, anahtar: string, base_kod: string } } | null}
+ */
+function getSelectedTreeContext() {
+  if (!addOzellik || !addAnaGrup || !addUstGrup || addOzellik.selectedIndex < 0) return null;
+  const anaGrup = addAnaGrup.value;
+  const ustGrup = addUstGrup.value;
+  const idx = parseInt(addOzellik.value, 10);
+  const items = productCatalog[anaGrup] && productCatalog[anaGrup][ustGrup];
+  if (Number.isNaN(idx) || !Array.isArray(items) || !items[idx]) return null;
+  const item = items[idx];
+  return {
+    anaGrup,
+    ustGrup,
+    item: {
+      isim: String(item.isim ?? ""),
+      anahtar: String(item.anahtar ?? ""),
+      base_kod: String(item.base_kod ?? "").trim()
+    }
+  };
+}
+
+function syncOzellikFieldsFromSelection() {
+  const ctx = getSelectedTreeContext();
+  if (!ctx) {
+    if (addAnahtarInput) addAnahtarInput.value = "";
+    if (addBaseKod) addBaseKod.value = "";
+    return;
+  }
+  if (addAnahtarInput) addAnahtarInput.value = ctx.item.anahtar;
+  if (addBaseKod) addBaseKod.value = ctx.item.base_kod;
+}
+
+function rebuildCetoMotorState() {
+  const Ceto = getCeto();
+  const state = Ceto.createCetoMotorState();
+  for (let i = 0; i < productRows.length; i++) {
+    const p = productRows[i];
+    if (p?.UrunAdi && p?.StokKodu) Ceto.ingestExistingProductRow(state, p.UrunAdi, p.StokKodu);
+  }
+  for (let i = 0; i < urunQueue.length; i++) {
+    const q = urunQueue[i];
+    if (q?.UrunAdi && q?.StokKodu) Ceto.ingestExistingProductRow(state, q.UrunAdi, q.StokKodu);
+  }
+  return state;
+}
+
+function runStokKoduUret() {
+  const Ceto = getCeto();
+  const urunAdi = addUrunAdi ? addUrunAdi.value.trim() : "";
+  const ctx = getSelectedTreeContext();
+  if (!urunAdi) {
+    showToast("Ürün adı girin");
+    return;
+  }
+  if (!ctx || !ctx.item.base_kod) {
+    showToast("Özellik seçin");
+    return;
+  }
+  const state = rebuildCetoMotorState();
+  const res = Ceto.assignStockCodeByBase(state, urunAdi, ctx.item.base_kod);
+  if (addStokKodu) addStokKodu.value = res.code;
+  updateAciklamaUretButtonState();
+  if (!res.ok) showToast(res.reason || res.code);
+  else if (res.duplicate) showToast("Mevcut ürün adı — aynı kod");
+}
+
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result ?? ""));
+    r.onerror = () => reject(r.error || new Error("Okunamadı"));
+    r.readAsDataURL(file);
+  });
+}
+
+function initMediaSlots() {
+  document.querySelectorAll(".media-slot").forEach((slot) => {
+    const idx = parseInt(slot.getAttribute("data-slot") || "0", 10);
+    const input = slot.querySelector(".media-input");
+    const preview = slot.querySelector(".media-preview");
+    const img = slot.querySelector(".media-img");
+    const ph = slot.querySelector(".media-placeholder");
+    const clearBtn = slot.querySelector(".media-clear");
+    if (!input || !preview) return;
+
+    preview.addEventListener("click", () => input.click());
+    preview.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        input.click();
+      }
+    });
+
+    input.addEventListener("change", async () => {
+      const f = input.files && input.files[0];
+      if (!f) return;
+      try {
+        const url = await readFileAsDataURL(f);
+        slotPhotos[idx] = url;
+        if (img) {
+          img.src = url;
+          img.removeAttribute("hidden");
+        }
+        if (ph) ph.setAttribute("hidden", "");
+        if (clearBtn) clearBtn.removeAttribute("hidden");
+      } catch {
+        showToast("Görsel okunamadı");
+      }
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        slotPhotos[idx] = null;
+        input.value = "";
+        if (img) {
+          img.removeAttribute("src");
+          img.setAttribute("hidden", "");
+        }
+        if (ph) ph.removeAttribute("hidden");
+        clearBtn.setAttribute("hidden", "");
+      });
+    }
+  });
+}
+
+function renderUrunQueue() {
+  if (!urunQueueBody || !urunQueueTable || !urunQueueEmpty) return;
+  if (urunQueue.length === 0) {
+    urunQueueEmpty.removeAttribute("hidden");
+    urunQueueTable.setAttribute("hidden", "");
+    urunQueueBody.innerHTML = "";
+    return;
+  }
+  urunQueueEmpty.setAttribute("hidden", "");
+  urunQueueTable.removeAttribute("hidden");
+  urunQueueBody.innerHTML = urunQueue
+    .map(
+      (q, i) => `
+    <tr>
+      <td><button type="button" class="link-copy-stok" data-q-idx="${i}" title="Kopyala">${escapeHtml(q.StokKodu)}</button></td>
+      <td>${escapeHtml(q.UrunAdi)}</td>
+      <td><span class="field-value-copyable queue-key" tabindex="0" role="button" data-q-copy="${i}" data-part="anahtar">${escapeHtml(
+        q.ANAHTAR
+      )}</span></td>
+      <td><button type="button" class="btn btn-small btn-outline" data-q-remove="${i}">Sil</button></td>
+    </tr>`
+    )
+    .join("");
+}
+
+urunQueueBody?.addEventListener("click", (e) => {
+  const rm = e.target.closest("[data-q-remove]");
+  if (rm) {
+    const i = parseInt(rm.dataset.qRemove, 10);
+    if (!Number.isNaN(i)) {
+      urunQueue.splice(i, 1);
+      renderUrunQueue();
+    }
+    return;
+  }
+  const lk = e.target.closest(".link-copy-stok");
+  if (lk) {
+    const i = parseInt(lk.dataset.qIdx, 10);
+    if (!Number.isNaN(i) && urunQueue[i]) copyToClipboard(urunQueue[i].StokKodu);
+    return;
+  }
+  const c = e.target.closest("[data-q-copy]");
+  if (c && c.dataset.part === "anahtar") {
+    const i = parseInt(c.dataset.qCopy, 10);
+    if (!Number.isNaN(i) && urunQueue[i]) copyToClipboard(urunQueue[i].ANAHTAR);
+  }
+});
+
+async function loadProductCatalogFromIpc() {
+  if (!window.api?.getProductCatalog) return;
+  try {
+    const res = await window.api.getProductCatalog();
+    if (res.success && res.catalog && Object.keys(res.catalog).length) {
+      applyProductCatalog(res.catalog);
+    } else {
+      setCatalogMeta(res.message || "Katalog yok — JSON yükleyin");
+      applyProductCatalog({});
+    }
+  } catch {
+    setCatalogMeta("Yüklenemedi");
+    applyProductCatalog({});
+  }
+}
+
+if (addAnaGrup) {
+  addAnaGrup.addEventListener("change", () => {
+    populateUstGrupSelect();
+    populateOzellikSelect();
+    syncOzellikFieldsFromSelection();
+  });
+}
+if (addUstGrup) {
+  addUstGrup.addEventListener("change", () => {
+    populateOzellikSelect();
+    syncOzellikFieldsFromSelection();
+  });
+}
+if (addOzellik) {
+  addOzellik.addEventListener("change", () => syncOzellikFieldsFromSelection());
+}
+
+if (btnUretStokKodu) btnUretStokKodu.addEventListener("click", () => runStokKoduUret());
+
+if (btnAciklamaUret) {
+  btnAciklamaUret.addEventListener("click", async () => {
+    const Ceto = getCeto();
+    const ctx = getSelectedTreeContext();
+    const urunAdi = addUrunAdi ? addUrunAdi.value.trim() : "";
+    const stok = addStokKodu ? addStokKodu.value.trim() : "";
+    if (!hasValidDraftStok()) {
+      showToast("Önce stok kodu üretin");
+      return;
+    }
+    if (!ctx || !ctx.item.base_kod) {
+      showToast("Özellik seçin");
+      return;
+    }
+    if (!urunAdi) {
+      showToast("Ürün adı girin");
+      return;
+    }
+    const marka = addMarka ? addMarka.value.trim() : "";
+    const fotograflar = slotPhotos.filter(Boolean);
+    const payload = Ceto.buildProductPayloadFromTree(ctx, {
+      UrunAdi: urunAdi,
+      Marka: marka,
+      StokKodu: stok,
+      Fotograflar: fotograflar
+    });
+    const o = { ...payload };
+    delete o.Fotograflar;
+    sourceProducts = [o];
+    selectedFilePath = null;
+    showAktifGirdiUi(urunAdi, stok, o);
+    await reloadProductsFromSource();
+    panelAciklama?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    showToast("Açıklama paneline aktarıldı");
+  });
+}
+
+if (btnCopyStokDraft && addStokKodu) {
+  btnCopyStokDraft.addEventListener("click", () => {
+    const v = addStokKodu.value.trim();
+    if (v) copyToClipboard(v);
+  });
+}
+
+if (btnAddUrunQueue) {
+  btnAddUrunQueue.addEventListener("click", () => {
+    const Ceto = getCeto();
+    const ctx = getSelectedTreeContext();
+    const urunAdi = addUrunAdi ? addUrunAdi.value.trim() : "";
+    const marka = addMarka ? addMarka.value.trim() : "";
+    const anahtar = ctx ? ctx.item.anahtar : "";
+    if (!ctx || !ctx.item.base_kod) {
+      showToast("Özellik seçin");
+      return;
+    }
+    if (!urunAdi) {
+      showToast("Ürün adı girin");
+      return;
+    }
+    let stok = addStokKodu ? addStokKodu.value.trim() : "";
+    if (!stok || stok === "KOD YOK") {
+      const state = rebuildCetoMotorState();
+      const res = Ceto.assignStockCodeByBase(state, urunAdi, ctx.item.base_kod);
+      stok = res.code;
+      if (addStokKodu) addStokKodu.value = stok;
+      if (!res.ok) {
+        showToast(res.reason || "KOD YOK");
+        return;
+      }
+    }
+    const fotograflar = slotPhotos.filter(Boolean);
+    const payload = Ceto.buildProductPayloadFromTree(ctx, {
+      UrunAdi: urunAdi,
+      Marka: marka,
+      StokKodu: stok,
+      Fotograflar: fotograflar
+    });
+    urunQueue.push({ StokKodu: stok, UrunAdi: urunAdi, ANAHTAR: anahtar, payload });
+    renderUrunQueue();
+    slotPhotos = [null, null, null];
+    document.querySelectorAll(".media-slot").forEach((slot) => {
+      const input = slot.querySelector(".media-input");
+      const img = slot.querySelector(".media-img");
+      const ph = slot.querySelector(".media-placeholder");
+      const clearBtn = slot.querySelector(".media-clear");
+      if (input) input.value = "";
+      if (img) {
+        img.removeAttribute("src");
+        img.setAttribute("hidden", "");
+      }
+      if (ph) ph.removeAttribute("hidden");
+      if (clearBtn) clearBtn.setAttribute("hidden", "");
+    });
+    if (addStokKodu) addStokKodu.value = "";
+    updateAciklamaUretButtonState();
+    showToast("Listeye eklendi");
+  });
+}
+
+if (btnSyncToAciklama) {
+  btnSyncToAciklama.addEventListener("click", async () => {
+    if (!urunQueue.length) {
+      showToast("Önce ürün ekleyin");
+      return;
+    }
+    sourceProducts = urunQueue.map((q) => {
+      const o = { ...q.payload };
+      delete o.Fotograflar;
+      return o;
+    });
+    selectedFilePath = null;
+    const first = sourceProducts[0];
+    showAktifGirdiUi("Ürün kuyruğu", `${sourceProducts.length} ürün`, first || null);
+    if (first && targetCategoryInput) {
+      targetCategoryInput.value = String(first.Kategori || first.kategori || "").trim();
+    }
+    await reloadProductsFromSource();
+    panelAciklama?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    showToast("Kuyruk açıklama paneline aktarıldı");
+  });
+}
+
+// ============================================================
 // Liste çizimi
 // ============================================================
 
@@ -226,7 +925,7 @@ function renderProductList() {
       <div class="empty-state">
         <div class="empty-icon">📭</div>
         <p class="empty-title">Henüz liste yok</p>
-        <p class="empty-subtitle">Soldan JSON yükleyin; ürünler burada listelenecek</p>
+        <p class="empty-subtitle">Katalogdan ürün seçin veya soldan taslak / kuyruk aktarın</p>
       </div>`;
     refreshBusyUi();
     return;
@@ -526,79 +1225,19 @@ resultsArea.addEventListener("keydown", (e) => {
   t.click();
 });
 
-// ============================================================
-// Sürükle-bırak
-// ============================================================
-
-dropZone.addEventListener("click", () => fileInput.click());
-
-dropZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  dropZone.classList.add("drag-over");
-});
-
-dropZone.addEventListener("dragleave", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  dropZone.classList.remove("drag-over");
-});
-
-dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  dropZone.classList.remove("drag-over");
-
-  const files = e.dataTransfer.files;
-  if (files.length > 0 && files[0].name.endsWith(".json")) {
-    handleFileSelected(files[0]);
-  } else {
-    showToast("Sadece .json dosyaları kabul edilir!");
-  }
-});
-
-fileInput.addEventListener("change", () => {
-  if (fileInput.files.length > 0) {
-    handleFileSelected(fileInput.files[0]);
-  }
-});
-
-async function handleFileSelected(file) {
-  selectedFilePath = file.path || null;
-  selectedFileName.textContent = file.name;
-  selectedFileSize.textContent = formatBytes(file.size);
-
-  dropZone.style.display = "none";
-  selectedFileBox.style.display = "flex";
-
-  try {
-    const text = await readFileAsText(file);
-    sourceProducts = parseProductsJsonText(text);
-    setStatus("Hazır");
-    await reloadProductsFromSource();
-  } catch (err) {
-    sourceProducts = [];
-    productRows = [];
-    showToast(err.message || "JSON okunamadı");
-    setStatus("Hata", "error");
-    renderProductList();
-    refreshBusyUi();
-  }
+if (katalogListWrap) {
+  katalogListWrap.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-katalog-sec");
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.katalogIdx, 10);
+    if (Number.isNaN(idx) || !testKitaplariFiltered[idx]) return;
+    void activateProductForAciklama(testKitaplariFiltered[idx]);
+  });
 }
 
-btnRemoveFile.addEventListener("click", () => {
-  selectedFilePath = null;
-  sourceProducts = [];
-  fileInput.value = "";
-  dropZone.style.display = "block";
-  selectedFileBox.style.display = "none";
-  productRows = [];
-  progressSection.style.display = "none";
-  resultsListToolbar.style.display = "none";
-  renderProductList();
-  refreshBusyUi();
-  setStatus("Hazır");
-});
+if (btnClearAktifGirdi) {
+  btnClearAktifGirdi.addEventListener("click", () => clearAktifGirdiUi());
+}
 
 targetCategoryInput.addEventListener(
   "change",
@@ -659,5 +1298,10 @@ if (window.api?.onProgress) {
     progressText.textContent = `${data.current} / ${data.total} — ${data.productName || ""}`;
   });
 }
+
+initMediaSlots();
+loadProductCatalogFromIpc();
+void initTestKitaplariPanel();
+updateAciklamaUretButtonState();
 
 refreshBusyUi();

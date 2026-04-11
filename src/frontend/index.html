@@ -7,8 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app-container">
-    <!-- HEADER -->
+  <div class="app-container app-dashboard">
     <header class="app-header">
       <div class="logo">
         <span class="logo-icon">🖊️</span>
@@ -19,105 +18,228 @@
       </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="app-main">
+    <main class="dashboard-main unified-workspace">
+      <div class="unified-split">
+      <!-- Sol: ürün + stok -->
+      <section class="unified-panel unified-panel-urun" id="panelUrun" aria-label="Ürün ve stok kodu">
+        <div class="panel-inner">
+          <h2 class="panel-heading">Yeni ürün</h2>
+          <p class="panel-hint">
+            Stok kodu için tek kaynak <code>data/productCatalog.json</code> uygulama açılışında yüklenir. Kategori seçiminde yazı yazılmaz — yalnızca menüler kullanılır.
+          </p>
 
-      <!-- SOL PANEL: Kontroller + Sürükle Bırak -->
-      <section class="panel panel-controls">
-        <h2>📂 Girdi</h2>
+          <p class="catalog-meta-line"><span class="catalog-meta" id="catalogMeta">—</span></p>
 
-        <!-- Sürükle-Bırak Alanı -->
-        <div class="drop-zone" id="dropZone">
-          <div class="drop-zone-content">
-            <div class="drop-icon">📥</div>
-            <p class="drop-title">JSON dosyanı buraya sürükle</p>
-            <p class="drop-subtitle">veya tıklayarak seç</p>
-          </div>
-          <input type="file" id="fileInput" accept=".json" hidden />
-        </div>
-
-        <!-- Seçilen Dosya -->
-        <div class="selected-file" id="selectedFileBox" style="display: none;">
-          <div class="file-info">
-            <span class="file-icon">📄</span>
-            <div class="file-details">
-              <span class="file-name" id="selectedFileName">—</span>
-              <span class="file-size" id="selectedFileSize">—</span>
+          <div class="form-grid form-grid-2">
+            <div class="control-group">
+              <label for="addAnaGrup">Ana grup</label>
+              <select id="addAnaGrup" class="input-text input-select"></select>
+            </div>
+            <div class="control-group">
+              <label for="addUstGrup">Üst grup</label>
+              <select id="addUstGrup" class="input-text input-select"></select>
+            </div>
+            <div class="control-group form-span-2">
+              <label for="addOzellik">Özellik</label>
+              <select id="addOzellik" class="input-text input-select"></select>
+            </div>
+            <div class="control-group">
+              <label for="addAnahtarInput">Anahtar (salt okunur)</label>
+              <input type="text" id="addAnahtarInput" class="input-text stok-readonly" readonly tabindex="-1" placeholder="Özellik seçilince dolar" autocomplete="off" />
+            </div>
+            <div class="control-group">
+              <label for="addBaseKod">Base kod</label>
+              <input type="text" id="addBaseKod" class="input-text stok-readonly" readonly tabindex="-1" placeholder="Özellik seçilince dolar" />
+            </div>
+            <div class="control-group">
+              <label for="addUrunAdi">Ürün adı</label>
+              <input type="text" id="addUrunAdi" class="input-text" placeholder="Ürün adı" autocomplete="off" />
+            </div>
+            <div class="control-group">
+              <label for="addMarka">Marka</label>
+              <input type="text" id="addMarka" class="input-text" placeholder="Marka" autocomplete="off" />
+            </div>
+            <div class="control-group form-span-2">
+              <label for="addStokKodu">Stok kodu</label>
+              <div class="stok-kod-row">
+                <input type="text" id="addStokKodu" class="input-text stok-readonly" readonly placeholder="Üret veya listeye eklenince oluşur" />
+                <button type="button" class="btn btn-small btn-outline" id="btnCopyStokDraft" title="Kopyala">📋</button>
+                <button type="button" class="btn btn-small btn-primary" id="btnUretStokKodu">Stok kodu üret</button>
+              </div>
             </div>
           </div>
-          <button class="btn-remove" id="btnRemoveFile" title="Dosyayı kaldır">✕</button>
-        </div>
 
-        <!-- Hedef Kategori -->
-        <div class="control-group">
-          <label for="targetCategory">Hedef Kategori <span class="optional">(opsiyonel)</span></label>
-          <input type="text" id="targetCategory" class="input-text" placeholder="Örn: ofis, çanta, kitap..." />
-        </div>
-
-        <!-- Üretim Butonu -->
-        <button id="btnGenerate" class="btn btn-primary" disabled>
-          <span class="btn-icon">▶</span> Üretimi Başlat
-        </button>
-
-        <!-- İlerleme -->
-        <div class="progress-section" id="progressSection" style="display: none;">
-          <div class="progress-bar-track">
-            <div class="progress-bar-fill" id="progressFill"></div>
+          <div class="stok-aciklama-bridge">
+            <button type="button" class="btn btn-primary btn-aciklama-uret" id="btnAciklamaUret" disabled>
+              Açıklama Üret
+            </button>
+            <p class="bridge-hint">Önce <strong>Stok kodu üret</strong> ile kodu oluşturun; ardından taslak ürünü sağdaki panele aktarır ve açıklama üretimine hazırlarsınız.</p>
           </div>
-          <p class="progress-text" id="progressText">İşleniyor...</p>
-        </div>
 
-        <!-- İstatistikler -->
-        <div class="stats-grid" id="statsGrid" style="display: none;">
-          <div class="stat-card">
-            <span class="stat-value" id="statTotal">0</span>
-            <span class="stat-label">Toplam</span>
+          <h3 class="subheading">Ürün görselleri (3 adet)</h3>
+          <div class="media-row" id="mediaRow">
+            <div class="media-slot" data-slot="0">
+              <input type="file" class="media-input" accept="image/*" hidden />
+              <div class="media-preview" tabindex="0" role="button" aria-label="Görsel 1 yükle">
+                <span class="media-placeholder">+ Fotoğraf</span>
+                <img alt="" class="media-img" hidden />
+              </div>
+              <button type="button" class="btn btn-small btn-outline media-clear" hidden>Kaldır</button>
+            </div>
+            <div class="media-slot" data-slot="1">
+              <input type="file" class="media-input" accept="image/*" hidden />
+              <div class="media-preview" tabindex="0" role="button" aria-label="Görsel 2 yükle">
+                <span class="media-placeholder">+ Fotoğraf</span>
+                <img alt="" class="media-img" hidden />
+              </div>
+              <button type="button" class="btn btn-small btn-outline media-clear" hidden>Kaldır</button>
+            </div>
+            <div class="media-slot" data-slot="2">
+              <input type="file" class="media-input" accept="image/*" hidden />
+              <div class="media-preview" tabindex="0" role="button" aria-label="Görsel 3 yükle">
+                <span class="media-placeholder">+ Fotoğraf</span>
+                <img alt="" class="media-img" hidden />
+              </div>
+              <button type="button" class="btn btn-small btn-outline media-clear" hidden>Kaldır</button>
+            </div>
           </div>
-          <div class="stat-card stat-success">
-            <span class="stat-value" id="statSuccess">0</span>
-            <span class="stat-label">Başarılı</span>
+
+          <div class="urun-form-actions">
+            <button type="button" class="btn btn-primary" id="btnAddUrunQueue">Listeye ekle</button>
+            <button type="button" class="btn btn-outline" id="btnSyncToAciklama">Kuyruğu açıklama paneline aktar</button>
           </div>
-          <div class="stat-card stat-fail">
-            <span class="stat-value" id="statFail">0</span>
-            <span class="stat-label">Başarısız</span>
+
+          <h3 class="subheading">Eklenen ürünler</h3>
+          <div class="urun-queue-wrap">
+            <div id="urunQueueEmpty" class="empty-inline">Henüz ürün eklenmedi.</div>
+            <table class="urun-queue-table" id="urunQueueTable" hidden>
+              <thead>
+                <tr>
+                  <th>Stok</th>
+                  <th>Ürün</th>
+                  <th>Anahtar</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="urunQueueBody"></tbody>
+            </table>
           </div>
         </div>
       </section>
 
-      <!-- SAĞ PANEL: Sonuçlar -->
-      <section class="panel panel-results">
-        <div class="results-header">
-          <h2>📋 Sonuçlar</h2>
-          <div class="results-list-toolbar" id="resultsListToolbar" style="display: none;">
-            <button type="button" class="btn btn-small btn-primary" id="btnGenerateAll" disabled>
-              Tümünü Üret
-            </button>
-          </div>
-          <div class="results-actions" id="resultsActions" style="display: none;">
-            <button type="button" class="btn btn-small btn-outline" id="btnCopyAll" title="Tüm satırları kopyala">
-              📋 Tümünü Kopyala
-            </button>
-            <button type="button" class="btn btn-small btn-outline" id="btnExportJson" title="JSON olarak indir">
-              💾 JSON İndir
-            </button>
-          </div>
-        </div>
+      <!-- Sağ: açıklama üret (girdi + sonuçlar) -->
+      <section class="unified-panel unified-panel-seo" id="panelAciklama" aria-label="Açıklama üret">
+        <div class="app-main seo-two-col">
+          <section class="panel panel-controls panel-katalog">
+            <h2>📂 Açıklama üret — katalog</h2>
+            <p class="panel-mini-hint" id="testKitaplariMetaHint">
+              Kaynak: <code>data/input/test_kitaplari.json</code> (proje içi, dosya yükleme yok).
+            </p>
 
-        <div id="resultsArea" class="results-area">
-          <div class="empty-state">
-            <div class="empty-icon">📭</div>
-            <p class="empty-title">Henüz liste yok</p>
-            <p class="empty-subtitle">Soldan JSON yükleyin; ürünler burada listelenir, satırdan üretim yapabilirsiniz</p>
-          </div>
+            <div class="katalog-filter-block">
+              <h3 class="katalog-subtitle">Kategori filtresi</h3>
+              <p class="katalog-filter-hint">Bir veya birden fazla kategori işaretleyin.</p>
+              <div id="kategoriCheckboxList" class="kategori-checkbox-list" role="group" aria-label="Kategoriler"></div>
+            </div>
+
+            <div class="katalog-list-block">
+              <h3 class="katalog-subtitle">Ürünler</h3>
+              <div id="katalogListEmpty" class="katalog-list-empty">Lütfen kategori seçin.</div>
+              <div id="katalogListToolbar" class="katalog-list-toolbar" hidden></div>
+              <div id="katalogListWrap" class="katalog-grid" hidden></div>
+            </div>
+
+            <div class="panel-divider"></div>
+
+            <h3 class="katalog-subtitle">Aktif ürün (üretim girdisi)</h3>
+            <div id="aktifGirdiWrap" class="aktif-girdi-wrap" hidden>
+              <div class="selected-file aktif-girdi-file" id="selectedFileBox">
+                <div class="file-info">
+                  <span class="file-icon">📄</span>
+                  <div class="file-details">
+                    <span class="file-name" id="selectedFileName">—</span>
+                    <span class="file-size" id="selectedFileSize">—</span>
+                  </div>
+                </div>
+                <button type="button" class="btn-remove" id="btnClearAktifGirdi" title="Girdiyi temizle">✕</button>
+              </div>
+              <div id="aktifUrunDetay" class="aktif-urun-detay" aria-live="polite"></div>
+            </div>
+            <p id="aktifGirdiPlaceholder" class="aktif-girdi-placeholder">Katalogdan bir ürün seçin veya soldan taslak/kuyruk aktarın.</p>
+
+            <div class="control-group">
+              <label for="targetCategory">Hedef Kategori <span class="optional">(opsiyonel)</span></label>
+              <input type="text" id="targetCategory" class="input-text" placeholder="Ürün seçilince dolar; isteğe göre düzenleyin" />
+            </div>
+
+            <button type="button" id="btnGenerate" class="btn btn-primary" disabled>
+              <span class="btn-icon">▶</span> Üretimi Başlat
+            </button>
+
+            <div class="progress-section" id="progressSection" style="display: none;">
+              <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressFill"></div>
+              </div>
+              <p class="progress-text" id="progressText">İşleniyor...</p>
+            </div>
+
+            <div class="stats-grid" id="statsGrid" style="display: none;">
+              <div class="stat-card">
+                <span class="stat-value" id="statTotal">0</span>
+                <span class="stat-label">Toplam</span>
+              </div>
+              <div class="stat-card stat-success">
+                <span class="stat-value" id="statSuccess">0</span>
+                <span class="stat-label">Başarılı</span>
+              </div>
+              <div class="stat-card stat-fail">
+                <span class="stat-value" id="statFail">0</span>
+                <span class="stat-label">Başarısız</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel panel-results">
+            <div class="results-header">
+              <h2>📋 Sonuçlar</h2>
+              <div class="results-list-toolbar" id="resultsListToolbar" style="display: none;">
+                <button type="button" class="btn btn-small btn-primary" id="btnGenerateAll" disabled>
+                  Tümünü Üret
+                </button>
+              </div>
+              <div class="results-actions" id="resultsActions" style="display: none;">
+                <button type="button" class="btn btn-small btn-outline" id="btnCopyAll" title="Tüm satırları kopyala">
+                  📋 Tümünü Kopyala
+                </button>
+                <button type="button" class="btn btn-small btn-outline" id="btnExportJson" title="JSON olarak indir">
+                  💾 JSON İndir
+                </button>
+              </div>
+            </div>
+
+            <div id="resultsArea" class="results-area">
+              <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p class="empty-title">Henüz liste yok</p>
+                <p class="empty-subtitle">Katalogdan ürün seçin veya soldan taslak / kuyruk aktarın</p>
+              </div>
+            </div>
+          </section>
         </div>
       </section>
-
+      </div>
     </main>
+
+    <footer class="ideasoft-footer" role="contentinfo">
+      <button type="button" class="btn ideasoft-btn" id="btnIdeasoft" disabled aria-disabled="true" title="Yakında — entegrasyon hazırlanıyor">
+        Ideasoft Paneline Gönder
+      </button>
+    </footer>
   </div>
 
-  <!-- Kopyalama Bildirimi -->
   <div class="toast" id="toast">Kopyalandı!</div>
 
+  <script src="../domain/cetoStockCode.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

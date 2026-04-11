@@ -7,6 +7,12 @@ contextBridge.exposeInMainWorld("api", {
 
   generateAtIndices: (options) => ipcRenderer.invoke("generate-at-indices", options),
 
+  getProductCatalog: () => ipcRenderer.invoke("get-product-catalog"),
+
+  getTestKitaplariMeta: () => ipcRenderer.invoke("get-test-kitaplari-meta"),
+
+  getTestKitaplariFiltered: (categories) => ipcRenderer.invoke("get-test-kitaplari-filtered", { categories }),
+
   onProgress: (callback) => {
     ipcRenderer.on("generation-progress", (_event, data) => callback(data));
   }

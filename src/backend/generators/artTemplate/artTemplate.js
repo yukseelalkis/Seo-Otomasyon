@@ -155,47 +155,59 @@ const FAQ_POOLS = {
 // ============================================================
 // TABLO SATIRLARI
 // ============================================================
-function buildTableRows(facts, subType) {
-  const brand = facts.brand || "";
-  const stockCode = facts.stockCode || "";
-  const base = [{ key: "Marka", value: brand }];
+function safeVal(val) {
+  return (val && String(val).trim()) ? String(val).trim() : "Belirtilmemiş";
+}
 
-  if (stockCode && stockCode !== "Belirtilmemiş") base.push({ key: "Ürün Kodu", value: stockCode });
+function buildTableRows(facts, subType) {
+  const base = [
+    { key: "Marka", value: safeVal(facts.brand) },
+    { key: "Ürün Kodu", value: safeVal(facts.stockCode) }
+  ];
 
   const TYPE_ROWS = {
     boya: [
       { key: "Ürün Tipi", value: "Sanatsal Boya" },
+      { key: "Boya Türü", value: safeVal(facts.medium) },
+      { key: "Renk/Adet", value: safeVal(facts.countInfo) },
       { key: "Pigment Kalitesi", value: "Sanatçı Derecesi (Artist Grade)" },
       { key: "Işık Haslığı", value: "Yüksek (ASTM-D4236 Uyumlu)" },
-      { key: "Hacim", value: facts.hacim || "Belirtilmemiş" }
+      { key: "Hacim", value: safeVal(facts.hacim) }
     ],
     fircaKalem: [
       { key: "Ürün Tipi", value: "Fırça Uçlu Kalem (Brush Pen)" },
+      { key: "Renk/Adet", value: safeVal(facts.countInfo) },
       { key: "Uç Yapısı", value: "Esnek Fırça Uç (Fiber/Keçe)" },
       { key: "Mürekkep Türü", value: "Su Bazlı, Kokusuz" },
-      { key: "Kullanım Yüzeyi", value: "Kağıt ve Karton" }
+      { key: "Kullanım Yüzeyi", value: "Kağıt ve Karton" },
+      { key: "Renk", value: safeVal(facts.color) }
     ],
     firca: [
       { key: "Ürün Tipi", value: "Sanatsal Boya Fırçası" },
-      { key: "Kıl Yapısı", value: facts.kilYapisi || "Profesyonel Sentetik/Doğal" },
-      { key: "Uç Tipi", value: facts.ucTipi || "Çok Amaçlı" },
+      { key: "Fırça Tipi", value: safeVal(facts.brushType) },
+      { key: "Malzeme", value: safeVal(facts.material) },
+      { key: "Kıl Yapısı", value: safeVal(facts.kilYapisi) || "Profesyonel Sentetik/Doğal" },
+      { key: "Uç Tipi", value: safeVal(facts.ucTipi) || "Çok Amaçlı" },
       { key: "Uyumlu Boya Türleri", value: "Akrilik, Yağlı ve Suluboya" }
     ],
     kagit: [
       { key: "Ürün Tipi", value: "Resim Kağıdı / Blok" },
-      { key: "Gramaj", value: facts.gramaj || "300 g/m²" },
-      { key: "Yüzey Dokusu", value: facts.doku || "Cold Pressed / Grenli" },
+      { key: "Gramaj", value: safeVal(facts.gramaj) || "300 g/m²" },
+      { key: "Yüzey Dokusu", value: safeVal(facts.doku) || "Cold Pressed / Grenli" },
       { key: "Özellik", value: "Asitsiz (Acid-Free)" }
     ],
     kil: [
       { key: "Ürün Tipi", value: "Modelaj Kili" },
+      { key: "Renk/Adet", value: safeVal(facts.countInfo) },
       { key: "Kuruma Türü", value: "Hava İle Kuruyan (Air Dry)" },
       { key: "Yapı", value: "Pürüzsüz, Kolay Şekil Alan" }
     ],
     kalem: [
       { key: "Ürün Tipi", value: "Sanatsal Teknik Kalem" },
+      { key: "Renk/Adet", value: safeVal(facts.countInfo) },
       { key: "Mürekkep", value: "Arşiv Kalitesinde Pigment Mürekkep" },
-      { key: "Uç Kalınlığı", value: facts.ucKalinligi || "Değişken" }
+      { key: "Uç Kalınlığı", value: safeVal(facts.ucKalinligi) || "Değişken" },
+      { key: "Renk", value: safeVal(facts.color) }
     ]
   };
 

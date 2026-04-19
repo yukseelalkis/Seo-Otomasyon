@@ -27,7 +27,7 @@ function normalizeColor(value) {
 function getColorFromName(productName) {
   const lower = toLowerTr(productName);
   const found = COLOR_MAP.find((color) => lower.includes(color));
-  return found ? normalizeColor(found) : "Standart";
+  return found ? normalizeColor(found) : "";
 }
 
 function getLeadSize(productName) {
@@ -37,13 +37,13 @@ function getLeadSize(productName) {
   const pointMatch = productName.match(/(?:^|\s)(0\.[3579]|1\.0)(?:\s|$)/i);
   if (pointMatch) return `${pointMatch[1]} mm`;
 
-  return "0.7 mm";
+  return "";
 }
 
 function getModelNo(productName, stockCode) {
   const modelMatch = productName.match(/(\d{5,8})(?!.*\d)/);
   if (modelMatch) return modelMatch[1];
-  return normalizeSpace(stockCode) || "Belirtilmemiş";
+  return "";
 }
 
 function getBrand(productName) {

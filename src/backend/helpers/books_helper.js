@@ -24,6 +24,10 @@ function pickVariationOffset(pool, seed, offset) {
   return pool[Math.abs(hash) % pool.length];
 }
 
+function safeVal(val) {
+  return (val && String(val).trim()) ? String(val).trim() : "Belirtilmemiş";
+}
+
 /**
  * Sitede kusursuz çalıştığı kanıtlanmış HTML yapısıyla tablo oluşturur.
  * rows: [{ key: "Yazar", value: "Ali Veli" }, ...]
@@ -32,13 +36,12 @@ function pickVariationOffset(pool, seed, offset) {
  * çift tırnak çakışmasını önler.
  */
 function buildStyledTable(rows) {
-  const filteredRows = rows.filter(
-    (r) => r.value && r.value !== "Belirtilmemiş" && String(r.value).trim() !== ""
-  );
-  if (filteredRows.length === 0) return "";
+  if (!rows || rows.length === 0) return "";
 
-  const body = filteredRows
-    .map((row, i) => {
+  const body = rows
+    .map((rawRow, i) => {
+      // Map missing variables directly to "Belirtilmemiş" for consistent SEO/display
+      const row = { key: rawRow.key, value: safeVal(rawRow.value) };
       // HTML attribute'leri için TEK TIRNAK kullanıyoruz
       const thStyle = i === 0
         ? "width: 30%; background-color: #f9f9f9;"

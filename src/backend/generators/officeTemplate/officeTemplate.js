@@ -170,42 +170,51 @@ const FAQ_POOLS = {
 // ============================================================
 // TABLO SATIRLARI
 // ============================================================
-function buildTableRows(facts, subType) {
-  const brand = facts.brand || "";
-  const stockCode = facts.stockCode || "";
-  const base = [{ key: "Marka", value: brand }];
+function safeVal(val) {
+  return (val && String(val).trim()) ? String(val).trim() : "Belirtilmemiş";
+}
 
-  if (stockCode && stockCode !== "Belirtilmemiş") base.push({ key: "Ürün Kodu", value: stockCode });
+function buildTableRows(facts, subType) {
+  const base = [
+    { key: "Marka", value: safeVal(facts.brand) },
+    { key: "Ürün Kodu", value: safeVal(facts.stockCode) }
+  ];
 
   const TYPE_ROWS = {
     hesapMakinesi: [
       { key: "Ürün Tipi", value: "Hesap Makinesi" },
       { key: "Ekran", value: "12 Haneli Geniş LCD Ekran" },
       { key: "Enerji Kaynağı", value: "Güneş Enerjisi + Pil (Dual)" },
+      { key: "Renk", value: safeVal(facts.color) },
+      { key: "Model No", value: safeVal(facts.modelNo) },
       { key: "Kullanım Alanı", value: "Ofis, Muhasebe, Ticaret" }
     ],
     ajanda: [
       { key: "Ürün Tipi", value: "Ajanda / Planlama Defteri" },
       { key: "Kapak Yapısı", value: "PP / Suni Deri Kapak" },
       { key: "Kağıt Özelliği", value: "70-80 gr, Mürekkep Geçirmez" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Toplantı Notları, Günlük Planlama" }
     ],
     postit: [
       { key: "Ürün Tipi", value: "Yapışkan Not Kağıdı (Post-it)" },
       { key: "Yapışkan Özelliği", value: "İz Bırakmayan, Tekrar Yapıştırılabilir" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Ofis, Okul, Ev" }
     ],
     dosya: [
       { key: "Ürün Tipi", value: "Telli Dosya / Arşiv Dosyası" },
       { key: "Boyut Uyumu", value: "A4 (21x29,7 cm)" },
       { key: "Mekanizma", value: "Metal Tel Mekanizması" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Ofis, Muhasebe, Arşivleme" }
     ],
     prestijKalem: [
       { key: "Ürün Tipi", value: "Prestij / Dolma Kalem" },
       { key: "Uç Tipi", value: "M (Medium) Uç" },
       { key: "Mürekkep Sistemi", value: "Konvertör + Kartuş Uyumlu" },
-      { key: "Gövde Malzemesi", value: "Metal / Reçine" }
+      { key: "Gövde Malzemesi", value: "Metal / Reçine" },
+      { key: "Renk", value: safeVal(facts.color) }
     ],
     bant: [
       { key: "Ürün Tipi", value: "Bant / Yapıştırıcı Bant" },
@@ -214,11 +223,17 @@ function buildTableRows(facts, subType) {
     zimba: [
       { key: "Ürün Tipi", value: "Zımba Makinesi" },
       { key: "Kapasite", value: "15-30 Sayfa" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Ofis, Okul" }
     ]
   };
 
-  const typeRows = TYPE_ROWS[subType] || [{ key: "Ürün Tipi", value: "Ofis Malzemesi" }, { key: "Kullanım Alanı", value: "Ofis, Okul" }];
+  const typeRows = TYPE_ROWS[subType] || [
+    { key: "Ürün Tipi", value: "Ofis Malzemesi" },
+    { key: "Renk", value: safeVal(facts.color) },
+    { key: "Model No", value: safeVal(facts.modelNo) },
+    { key: "Kullanım Alanı", value: "Ofis, Okul" }
+  ];
   return [...base, ...typeRows];
 }
 

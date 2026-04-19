@@ -173,17 +173,22 @@ function buildWhoUsesBlock(subType) {
 // ============================================================
 // TABLO SATIRLARI
 // ============================================================
-function buildTableRows(facts, subType) {
-  const brand = facts.brand || "";
-  const stockCode = facts.stockCode || "";
-  const base = [{ key: "Marka", value: brand }];
+function safeVal(val) {
+  return (val && String(val).trim()) ? String(val).trim() : "Belirtilmemiş";
+}
 
-  if (stockCode && stockCode !== "Belirtilmemiş") base.push({ key: "Ürün Kodu", value: stockCode });
+function buildTableRows(facts, subType) {
+  const base = [
+    { key: "Marka", value: safeVal(facts.brand) },
+    { key: "Ürün Kodu", value: safeVal(facts.stockCode) }
+  ];
 
   const TYPE_ROWS = {
     kursunkalem: [
       { key: "Ürün Tipi", value: "Kurşun Kalem" },
       { key: "Uç Derecesi", value: "HB" },
+      { key: "Uç Boyutu", value: safeVal(facts.leadSize) },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Dayanıklılık", value: "Kırılmaya Karşı Ekstra Dirençli Uç" },
       { key: "Kullanım Alanı", value: "Okul, Ofis, Genel Yazım ve Çizim" }
     ],
@@ -191,6 +196,7 @@ function buildTableRows(facts, subType) {
       { key: "Ürün Tipi", value: "Yumuşak Oyun Hamuru Seti" },
       { key: "Doku Özelliği", value: "Yumuşak, Kolay Şekil Alan, Yapışmayan" },
       { key: "Güvenlik", value: "Sağlığa Zararsız, Toksik Madde İçermez" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Gelişim Alanı", value: "İnce Motor Becerileri, Hayal Gücü, El-Göz Koordinasyonu" }
     ],
     yapistirici: [
@@ -198,27 +204,32 @@ function buildTableRows(facts, subType) {
       { key: "İçerik Özelliği", value: "Su Bazlı, Solventsiz, Kokusuz" },
       { key: "Kullanım Alanları", value: "Kağıt, Karton, Ahşap, Keçe" },
       { key: "Kuruma Türü", value: "Şeffaf (İz bırakmaz)" },
+      { key: "Model No", value: safeVal(facts.modelNo) },
       { key: "Güvenlik", value: "Dermatolojik olarak test edilmiştir" }
     ],
     pastel: [
       { key: "Ürün Tipi", value: "Pastel Boya" },
       { key: "Uygulama Yüzeyleri", value: "Kağıt, Karton, Tahta, Taş" },
       { key: "Performans", value: "Yüksek Örtücülük, Yoğun Yayılma" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Okul Öncesi ve İlkokul" }
     ],
     makas: [
       { key: "Ürün Tipi", value: "Güvenli Makas" },
       { key: "Uç Yapısı", value: "Yuvarlatılmış (Güvenli Uç)" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Kağıt ve İnce Karton Kesimi" }
     ],
     silgi: [
       { key: "Ürün Tipi", value: "Silgi" },
       { key: "Silme Performansı", value: "Kalıntısız, Temiz Silme" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Okul, Ofis, Genel Kullanım" }
     ],
     kalemtiras: [
       { key: "Ürün Tipi", value: "Kalemtıraş" },
       { key: "Bıçak Yapısı", value: "Dayanıklı ve Uzun Ömürlü Çelik Bıçak" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Kullanım Alanı", value: "Okul, Ofis" }
     ],
     cizimSeti: [
@@ -229,11 +240,17 @@ function buildTableRows(facts, subType) {
     ],
     eva: [
       { key: "Ürün Tipi", value: "EVA Levha" },
+      { key: "Renk", value: safeVal(facts.color) },
       { key: "Güvenlik", value: "Bakteri Üretmeyen, Geri Dönüştürülebilir" }
     ]
   };
 
-  const typeRows = TYPE_ROWS[subType] || [{ key: "Ürün Tipi", value: "Kırtasiye" }, { key: "Kullanım Alanı", value: "Okul, Ofis, Hobi" }];
+  const typeRows = TYPE_ROWS[subType] || [
+    { key: "Ürün Tipi", value: "Kırtasiye" },
+    { key: "Renk", value: safeVal(facts.color) },
+    { key: "Model No", value: safeVal(facts.modelNo) },
+    { key: "Kullanım Alanı", value: "Okul, Ofis, Hobi" }
+  ];
   return [...base, ...typeRows];
 }
 

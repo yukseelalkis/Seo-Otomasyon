@@ -185,10 +185,80 @@ function buildLicenseParagraph(title, license) {
 // ============================================================
 // TABLO SATIRLARI
 // ============================================================
+function safeVal(val) {
+  return (val && String(val).trim()) ? String(val).trim() : "Belirtilmemiş";
+}
+
 function buildBagTableRows(facts, subType, license) {
-  const brand = facts.brand || "";
+  const brand = safeVal(facts.brand);
   const base = [{ key: "Marka", value: brand }];
-  if (facts.stockCode && facts.stockCode !== "Belirtilmemiş") base.push({ key: "Stok Kodu", value: facts.stockCode });
+
+  const TYPE_ROWS = {
+    sirt: [
+      { key: "Ürün Tipi", value: "Sırt Çantası" },
+      { key: "Materyal", value: safeVal(facts.materyal) },
+      { key: "Kumaş Özelliği", value: safeVal(facts.kumasOzelligi) },
+      { key: "Boyut", value: safeVal(facts.boyut) },
+      { key: "Ağırlık", value: safeVal(facts.agirlik) },
+      { key: "Bölme Sayısı", value: safeVal(facts.bolmeSayisi) },
+      { key: "Yan Bölme", value: safeVal(facts.yanBolme) },
+      { key: "Askı Özelliği", value: safeVal(facts.askiOzelligi) || "Ergonomik, dengeli taşıma" },
+      { key: "Renk", value: safeVal(facts.renk || facts.color) },
+      { key: "Hedef Yaş Grubu", value: safeVal(facts.yasGrubu) },
+      { key: "Temizlik", value: safeVal(facts.yikanabilirlik) },
+      { key: "Uyumlu Ürünler", value: safeVal(facts.uyumluUrunler) },
+      { key: "Stok Kodu", value: safeVal(facts.stockCode) }
+    ],
+    anaokulu: [
+      { key: "Ürün Tipi", value: "Anaokul Çantası" },
+      { key: "Materyal", value: safeVal(facts.materyal) },
+      { key: "Kumaş Özelliği", value: safeVal(facts.kumasOzelligi) },
+      { key: "Boyut", value: safeVal(facts.boyut) },
+      { key: "Ağırlık", value: safeVal(facts.agirlik) },
+      { key: "Bölme Sayısı", value: safeVal(facts.bolmeSayisi) },
+      { key: "Yan Bölme", value: safeVal(facts.yanBolme) },
+      { key: "Askı Özelliği", value: safeVal(facts.askiOzelligi) || "Ergonomik, dengeli taşıma" },
+      { key: "Renk", value: safeVal(facts.renk || facts.color) },
+      { key: "Hedef Yaş Grubu", value: safeVal(facts.yasGrubu) || "Anaokulu" },
+      { key: "Karakter/Tema", value: safeVal(facts.karakter) },
+      { key: "Temizlik", value: safeVal(facts.yikanabilirlik) },
+      { key: "Uyumlu Ürünler", value: safeVal(facts.uyumluUrunler) },
+      { key: "Stok Kodu", value: safeVal(facts.stockCode) }
+    ],
+    matara: [
+      { key: "Ürün Tipi", value: "Su Matarası / Suluk" },
+      { key: "Malzeme", value: safeVal(facts.materyal) || "Tritan / BPA İçermez" },
+      { key: "Boyut", value: safeVal(facts.boyut) },
+      { key: "Renk", value: safeVal(facts.renk || facts.color) },
+      { key: "Kapak Tipi", value: "Sızdırmaz, Kolay Açılır" },
+      { key: "Güvenlik", value: "BPA İçermez, Toksik Madde İçermez" },
+      { key: "Stok Kodu", value: safeVal(facts.stockCode) }
+    ],
+    proje: [
+      { key: "Ürün Tipi", value: "Proje / Resim Çantası" },
+      { key: "Materyal", value: safeVal(facts.materyal) },
+      { key: "Boyut", value: safeVal(facts.boyut) },
+      { key: "Renk", value: safeVal(facts.renk || facts.color) },
+      { key: "Koruma", value: "Darbe Emici Sünger Dolgu" },
+      { key: "Taşıma Özelliği", value: "Tutma Sapı ve Omuz Askısı" },
+      { key: "Stok Kodu", value: safeVal(facts.stockCode) }
+    ],
+    beslenme: [
+      { key: "Ürün Tipi", value: "Beslenme Çantası" },
+      { key: "Materyal", value: safeVal(facts.materyal) },
+      { key: "Boyut", value: safeVal(facts.boyut) },
+      { key: "Renk", value: safeVal(facts.renk || facts.color) },
+      { key: "Yalıtım", value: "Termal Yalıtımlı İç Astar" },
+      { key: "Stok Kodu", value: safeVal(facts.stockCode) }
+    ],
+    kalemKutusu: [
+      { key: "Ürün Tipi", value: "Kalem Kutusu" },
+      { key: "Materyal", value: safeVal(facts.materyal) },
+      { key: "Boyut", value: safeVal(facts.boyut) },
+      { key: "Renk", value: safeVal(facts.renk || facts.color) },
+      { key: "Stok Kodu", value: safeVal(facts.stockCode) }
+    ]
+  };
 
   // Lisans satırı
   if (license) {
@@ -196,52 +266,8 @@ function buildBagTableRows(facts, subType, license) {
     base.push({ key: "Lisans / Karakter", value: licenseValue });
   }
 
-  const TYPE_ROWS = {
-    sirt: [
-      { key: "Ürün Tipi", value: "Sırt Çantası" },
-      { key: "Sırt Desteği", value: "Ortopedik / Yastıklı" },
-      { key: "Askı Özelliği", value: "Ayarlanabilir ve Yastıklı Askılar" },
-      { key: "Kullanım Alanı", value: "Okul, Günlük Kullanım" }
-    ],
-    anaokulu: [
-      { key: "Ürün Tipi", value: "Anaokul Çantası" },
-      { key: "Yaş Grubu", value: "3-6 Yaş (Anaokulu)" },
-      { key: "Askı Özelliği", value: "Ayarlanabilir askılar ve yumuşak sırt desteği" },
-      { key: "Kullanım Alanı", value: "Anaokulu, Kreş" }
-    ],
-    matara: [
-      { key: "Ürün Tipi", value: "Su Matarası / Suluk" },
-      { key: "Malzeme", value: "Tritan / BPA İçermez" },
-      { key: "Kapak Tipi", value: "Sızdırmaz, Kolay Açılır" },
-      { key: "Güvenlik", value: "BPA İçermez, Toksik Madde İçermez" }
-    ],
-    proje: [
-      { key: "Ürün Tipi", value: "Proje / Resim Çantası" },
-      { key: "Koruma", value: "Darbe Emici Sünger Dolgu" },
-      { key: "Taşıma Özelliği", value: "Tutma Sapı ve Omuz Askısı" },
-      { key: "Kullanım Alanı", value: "Okul, Resim Atölyesi" }
-    ],
-    beslenme: [
-      { key: "Ürün Tipi", value: "Beslenme Çantası" },
-      { key: "Yalıtım", value: "Termal Yalıtımlı İç Astar" },
-      { key: "Kullanım Alanı", value: "Okul, Piknik" }
-    ],
-    kalemKutusu: [
-      { key: "Ürün Tipi", value: "Kalem Kutusu" },
-      { key: "Kullanım Alanı", value: "Okul, Ofis" }
-    ]
-  };
-
-  const boyut = facts.boyut || "";
-  const renk = facts.renk || "";
-  const karakter = facts.karakter || "";
-  const extra = [];
-  if (boyut) extra.push({ key: "Boyut", value: boyut });
-  if (renk) extra.push({ key: "Renk", value: renk });
-  if (karakter && !license) extra.push({ key: "Karakter/Tema", value: karakter });
-
   const typeRows = TYPE_ROWS[subType] || TYPE_ROWS.sirt;
-  return [...base, ...typeRows, ...extra];
+  return [...base, ...typeRows];
 }
 
 // ============================================================

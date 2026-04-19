@@ -191,12 +191,17 @@ async function refreshKatalogList() {
   testKitaplariFiltered = Array.isArray(res.products) ? res.products : [];
   katalogListEmpty.style.display = "none";
   if (katalogListToolbar) {
-    if (res.truncated) {
+    const toolbarText = document.getElementById("katalogListToolbarText");
+    if (testKitaplariFiltered.length > 0) {
       katalogListToolbar.hidden = false;
-      katalogListToolbar.textContent = `İlk ${res.products.length} ürün gösteriliyor (toplam eşleşen: ${res.totalMatched}).`;
+      if (toolbarText) {
+        toolbarText.textContent = res.truncated
+          ? `İlk ${res.products.length} ürün gösteriliyor (toplam eşleşen: ${res.totalMatched}).`
+          : `${testKitaplariFiltered.length} ürün listelendi.`;
+      }
     } else {
       katalogListToolbar.hidden = true;
-      katalogListToolbar.textContent = "";
+      if (toolbarText) toolbarText.textContent = "";
     }
   }
   katalogListWrap.innerHTML = testKitaplariFiltered
@@ -284,6 +289,64 @@ const DETAIL_FIELDS = [
   { key: "MetaKeywords", label: "Meta Anahtar Kelimeler" },
   { key: "UretimKaynagi", label: "Üretim Kaynağı" }
 ];
+
+/** Kategori-bazlı ekstra alanlar (sağ panelde gösterilir) */
+const STRATEGY_EXTRA_FIELDS = {
+  bag: [
+    { key: "materyal", label: "Materyal" },
+    { key: "kumasOzelligi", label: "Kumaş Özelliği" },
+    { key: "boyut", label: "Boyut" },
+    { key: "agirlik", label: "Ağırlık" },
+    { key: "bolmeSayisi", label: "Bölme Sayısı" },
+    { key: "yanBolme", label: "Yan Bölme" },
+    { key: "askiOzelligi", label: "Askı Özelliği" },
+    { key: "renk", label: "Renk" },
+    { key: "yasGrubu", label: "Hedef Yaş Grubu" },
+    { key: "karakter", label: "Karakter/Tema" },
+    { key: "yikanabilirlik", label: "Temizlik" },
+    { key: "uyumluUrunler", label: "Uyumlu Ürünler" }
+  ],
+  "preschool-bag": [
+    { key: "materyal", label: "Materyal" },
+    { key: "boyut", label: "Boyut" },
+    { key: "renk", label: "Renk" },
+    { key: "yasGrubu", label: "Hedef Yaş Grubu" },
+    { key: "karakter", label: "Karakter/Tema" },
+    { key: "askiOzelligi", label: "Askı Özelliği" }
+  ],
+  book: [
+    { key: "yazar", label: "Yazar" },
+    { key: "yayinevi", label: "Yayınevi" },
+    { key: "sayfaSayisi", label: "Sayfa Sayısı" },
+    { key: "ebat", label: "Ebat" },
+    { key: "isbn", label: "ISBN" },
+    { key: "classLevel", label: "Sınıf Düzeyi" },
+    { key: "examType", label: "Sınav Tipi" },
+    { key: "lesson", label: "Ders" },
+    { key: "publicationType", label: "Yayın Türü" }
+  ],
+  art: [
+    { key: "medium", label: "Boya Türü" },
+    { key: "countInfo", label: "Adet/Renk Bilgisi" },
+    { key: "brushType", label: "Fırça Tipi" },
+    { key: "material", label: "Malzeme" },
+    { key: "color", label: "Renk" }
+  ],
+  office: [
+    { key: "color", label: "Renk" },
+    { key: "leadSize", label: "Uç Boyutu" },
+    { key: "modelNo", label: "Model No" }
+  ],
+  stationery: [
+    { key: "color", label: "Renk" },
+    { key: "leadSize", label: "Uç Boyutu" },
+    { key: "modelNo", label: "Model No" }
+  ],
+  generic: [
+    { key: "color", label: "Renk" },
+    { key: "modelNo", label: "Model No" }
+  ]
+};
 
 // ============================================================
 // Yardımcı
@@ -373,7 +436,15 @@ function mergeRecordIntoRow(row, record) {
     "UrunAciklamasi",
     "Strateji",
     "SEOKontrol",
-    "KaliteKontrol"
+    "KaliteKontrol",
+    // Kategori-bazlı ekstra alanlar
+    "materyal", "kumasOzelligi", "boyut", "agirlik",
+    "bolmeSayisi", "yanBolme", "askiOzelligi", "renk",
+    "yasGrubu", "karakter", "yikanabilirlik", "uyumluUrunler",
+    "color", "leadSize", "modelNo",
+    "yazar", "yayinevi", "sayfaSayisi", "ebat", "isbn",
+    "classLevel", "examType", "lesson", "publicationType",
+    "medium", "countInfo", "brushType", "material"
   ];
   for (const k of keys) {
     if (record[k] !== undefined) row[k] = record[k];
@@ -397,11 +468,13 @@ function buildPriorDescriptions(excludeIndices) {
 }
 
 function updateStatsFromRows() {
-  const total = productRows.length;
-  const success = productRows.filter((r) => r.SEOKontrol?.passedAllRules).length;
+  const generated = productRows.filter((r) => r.UrunAciklamasi);
+  const total = generated.length;
+  const success = generated.filter((r) => r.SEOKontrol?.passedAllRules).length;
+  const fail = generated.filter((r) => r.SEOKontrol && !r.SEOKontrol.passedAllRules).length;
   statTotal.textContent = total;
   statSuccess.textContent = success;
-  statFail.textContent = total - success;
+  statFail.textContent = fail;
 }
 
 // ============================================================
@@ -886,6 +959,26 @@ function buildDetailRowsHtml(row, index) {
     </div>`
   ).join("");
 
+  // Kategori-bazlı ekstra alanlar
+  const strategyKey = row.Strateji || "";
+  const extraFields = STRATEGY_EXTRA_FIELDS[strategyKey] || STRATEGY_EXTRA_FIELDS.generic || [];
+  const strategyLines = extraFields.map(
+    ({ key, label }) => {
+      const val = row[key];
+      const display = (val === undefined || val === null || val === "") ? "Belirtilmemiş" : String(val);
+      return `
+    <div class="result-field">
+      <span class="field-label">${escapeHtml(label)}</span>
+      <span class="field-value field-value-copyable" role="button" tabindex="0" data-copyable="1" data-row-index="${index}" data-field-key="${escapeAttr(
+        key
+      )}" title="Kopyalamak için tıklayın">${escapeHtml(display)}</span>
+      <button type="button" class="field-copy" data-copy-row="${index}" data-copy-field="${escapeAttr(
+        key
+      )}" title="Kopyala">📋</button>
+    </div>`;
+    }
+  ).join("");
+
   const extra = row.UrunAciklamasi
     ? `
     <div class="result-field result-field-block">
@@ -911,7 +1004,7 @@ function buildDetailRowsHtml(row, index) {
     </div>`
     : "";
 
-  return lines + extra;
+  return lines + strategyLines + extra;
 }
 
 function renderProductList() {
@@ -1232,6 +1325,29 @@ if (katalogListWrap) {
     const idx = parseInt(btn.dataset.katalogIdx, 10);
     if (Number.isNaN(idx) || !testKitaplariFiltered[idx]) return;
     void activateProductForAciklama(testKitaplariFiltered[idx]);
+  });
+}
+
+// Tümünü Aktar butonu: filtrelenmiş tüm ürünleri üretim paneline toplu aktar
+const btnTransferAllKatalog = document.getElementById("btnTransferAllKatalog");
+if (btnTransferAllKatalog) {
+  btnTransferAllKatalog.addEventListener("click", async () => {
+    if (!testKitaplariFiltered.length) {
+      showToast("Aktarılacak ürün yok — önce kategori seçin");
+      return;
+    }
+    sourceProducts = testKitaplariFiltered.map((p) => sanitizeProductDeep(p));
+    selectedFilePath = null;
+    const first = sourceProducts[0];
+    showAktifGirdiUi("Toplu katalog aktarımı", `${sourceProducts.length} ürün`, first || null);
+    if (first && targetCategoryInput) {
+      targetCategoryInput.value = String(first.Kategori || first.kategori || "").trim();
+    }
+    setStatus("Yükleniyor...", "running");
+    await reloadProductsFromSource();
+    setStatus("Hazır");
+    panelAciklama?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    showToast(`${sourceProducts.length} ürün üretim paneline aktarıldı`);
   });
 }
 

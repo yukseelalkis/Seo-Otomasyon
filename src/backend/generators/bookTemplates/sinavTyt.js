@@ -18,7 +18,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, TYT'de fark yaratmak isteyen adaylar için ${t.publisher} kalitesiyle hazırlanmış, konuları sistematik bir yaklaşımla ele alan ve sınav pratiği kazandıran etkili bir çalışma materyalidir.</p>`,
   (t) => `<p><strong>${t.title}</strong>, üniversite sınavına hazırlanan tüm adayların TYT oturumundaki başarısını artırmak amacıyla ${t.publisher} tarafından titizlikle oluşturulmuş bir kaynak kitaptır. Konu kavrama ve soru çözme pratiğini bir arada sunar.</p>`,
   (t) => `<p><strong>${t.title}</strong>, TYT sınavında hedeflediğiniz netlere ulaşmanız için gereken tüm bilgi ve pratiği tek bir kaynakta sunan, ${t.publisher} etiketiyle yayımlanmış kapsamlı bir hazırlık kitabıdır.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, TYT müfredatının tüm kazanımlarını kapsayan ve öğrencilere sistematik bir çalışma düzeni sunan nitelikli bir kaynaktır. ${t.publisher} güvencesiyle hazırlanmıştır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, TYT müfredatının tüm kazanımlarını kapsayan ve öğrencilere sistematik bir çalışma düzeni sunan nitelikli bir kaynaktır. ${t.publisher} güvencesiyle hazırlanmıştır.</p>`,
+  (t) => `<p>Üniversite hazırlık maratonunun ilk ve en kritik aşaması olan TYT'de <strong>${t.title}</strong>, ${t.publisher} uzmanlığıyla geliştirilen soru kalitesi ve müfredat uyumuyla adaylara zaman kazandıran bir rehberdir.</p>`,
+  (t) => `<p>${t.publisher} güvencesiyle sunulan <strong>${t.title}</strong>, adayların TYT oturumunda hem hız hem de doğruluk oranlarını artırmayı hedefleyen, yeni nesil kurgusal sorularla desteklenmiş nitelikli bir hazırlık materyalidir.</p>`,
+  (t) => `<p>Adayların temel yeterliliklerini pekiştiren <strong>${t.title}</strong>, TYT sınav formasına uygun pratik yapmanızı sağlayan yapısı ve ${t.publisher} kalitesiyle eğitim hayatınızdaki önemli bir boşluğu doldurur.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, sınav hazırlık sürecini daha verimli ve düzenli hale getirmek isteyenler için ${t.publisher} tarafından özel olarak kurgulanmış, konuları temelden alıp ileri seviyeye taşıyan bir eğitim kaynağıdır.</p>`
 ];
 
 const DETAIL_POOL = [

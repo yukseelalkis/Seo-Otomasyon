@@ -37,7 +37,6 @@ function detectSubType(facts) {
   if (/makas|scissor/i.test(all)) return "makas";
   if (/cetvel|pergel|çizim seti|olcu|ölçü/i.test(all)) return "cizimSeti";
   if (/eva|simli|keçe|kece|foam/i.test(all)) return "eva";
-  if (/defter|notebook/i.test(all)) return "defter";
   if (/sticker|etiket/i.test(all)) return "sticker";
   if (/boya/i.test(all)) return "genelBoya";
   return "genel";
@@ -50,39 +49,57 @@ const INTRO_POOLS = {
   kursunkalem: [
     (t) => `<p><strong>${t.title}</strong>, okul ve ofis kullanımı için ideal, pürüzsüz yazım deneyimi sunan yüksek kaliteli bir kurşun kalemdir. Ergonomik gövde tasarımı sayesinde uzun süreli yazımlarda eli yormaz.</p>`,
     (t) => `<p><strong>${t.title}</strong>, hem not alırken hem de çizim yaparken dengeli performans sunan, ${t.brand} güvencesiyle üretilmiş dayanıklı bir yazım gerecidir.</p>`,
-    (t) => `<p>Sıradan kalemlerden sıkılanlar için tasarlanan <strong>${t.title}</strong>, estetik tasarımı ve yumuşak yazım hissiyle masanıza enerji katar. Okul, ofis ve kişisel kullanım için idealdir.</p>`
+    (t) => `<p>Sıradan kalemlerden sıkılanlar için tasarlanan <strong>${t.title}</strong>, estetik tasarımı ve yumuşak yazım hissiyle masanıza enerji katar. Okul, ofis ve kişisel kullanım için idealdir.</p>`,
+    (t) => `<p>Yazı yazmayı bir keyfe dönüştüren <strong>${t.title}</strong>, üstün grafit kalitesi ve kırılmaya dayanıklı ucuyla her yaştan kullanıcının favorisi olmaya adaydır.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, teknik çizimlerden günlük notlara kadar geniş bir kullanım alanında hassas ve net çizgiler sunan profesyonel bir kurşun kalemdir.</p>`
   ],
   hamur: [
     (t) => `<p>Çocukların motor becerilerini geliştirmek ve yaratıcılıklarını serbest bırakmak için tasarlanan <strong>${t.title}</strong>, yumuşak ve kolay şekil alan yapısıyla öne çıkar. Canlı renk seçenekleri sayesinde hayal gücünü harekete geçirir.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, küçük ellerin güvenle oynayabileceği, toksik madde içermeyen ve sağlığa zararsız özel formülüyle üretilmiş bir oyun hamurudur. Kreş ve anaokulu etkinliklerinin vazgeçilmez materyalidir.</p>`
+    (t) => `<p><strong>${t.title}</strong>, küçük ellerin güvenle oynayabileceği, toksik madde içermeyen ve sağlığa zararsız özel formülüyle üretilmiş bir oyun hamurudur. Kreş ve anaokulu etkinliklerinin vazgeçilmez materyalidir.</p>`,
+    (t) => `<p>Minik sanatçıların hayal dünyasını gerçeğe dönüştüren <strong>${t.title}</strong>, kurumayan özel dokusu ve birbirine karışabilen canlı renkleriyle sınırsız eğlence vadediyor.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, hem öğretici hem de eğlenceli bir aktivite arayan aileler için ideal, çocukların el kaslarını güçlendiren kaliteli bir oyun hamuru setidir.</p>`
   ],
   yapistirici: [
     (t) => `<p><strong>${t.title}</strong>, okul, ev ve ofis projelerinde kağıt, karton ve keçe gibi materyalleri güvenle birleştirmek için geliştirilmiş çok amaçlı bir yapıştırıcıdır. Solventsiz ve kokusuz formülü sayesinde çocukların kullanımına tamamen uygundur.</p>`,
-    (t) => `<p>El işi projelerinden ofis kullanımına kadar geniş bir yelpazede güçlü yapışma sağlayan <strong>${t.title}</strong>, şeffaf kuruma teknolojisi sayesinde yüzeylerde iz bırakmaz.</p>`
+    (t) => `<p>El işi projelerinden ofis kullanımına kadar geniş bir yelpazede güçlü yapışma sağlayan <strong>${t.title}</strong>, şeffaf kuruma teknolojisi sayesinde yüzeylerde iz bırakmaz.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, yüksek yapıştırma gücü ve pratik uygulama başlığı ile hobi çalışmalarınızda ve okul ödevlerinizde en büyük yardımcınız olacak.</p>`,
+    (t) => `<p>Hızlı kuruyan ve dalgalanma yapmayan özel formülüyle <strong>${t.title}</strong>, profesyonel sunumlardan çocukların el sanatları etkinliklerine kadar her alanda güvenle kullanılır.</p>`
   ],
   pastel: [
     (t) => `<p><strong>${t.title}</strong>, canlı renkleri ve yumuşak sürümüyle özellikle okul öncesi ve ilkokul çağındaki çocukların resim yapma becerilerini geliştirmek için özenle tasarlanmış bir settir.</p>`,
-    (t) => `<p>Kağıt, karton, tahta ve taş gibi farklı yüzeylerde mükemmel sonuçlar sunan <strong>${t.title}</strong>, yüksek örtücülük özelliği sayesinde yaratıcı projelerde kesintisiz bir deneyim sağlar.</p>`
+    (t) => `<p>Kağıt, karton, tahta ve taş gibi farklı yüzeylerde mükemmel sonuçlar sunan <strong>${t.title}</strong>, yüksek örtücülük özelliği sayesinde yaratıcı projelerde kesintisiz bir deneyim sağlar.</p>`,
+    (t) => `<p>Renk geçişlerini kolayca yapabileceğiniz <strong>${t.title}</strong>, toz bırakmayan ve ele bulaşmayan yapısıyla temiz bir kullanım sunar.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, yoğun pigment yapısı ve parlak renkleriyle çocukların resimlerini daha canlı ve etkileyici hale getiren kaliteli bir pastel boya takımıdır.</p>`
   ],
   makas: [
     (t) => `<p><strong>${t.title}</strong>, güvenli tasarımı ve ergonomik tutuşuyla çocukların ince motor becerilerini geliştirmesi için özel olarak tasarlanmış bir okul gerecidir.</p>`,
-    (t) => `<p>Hafif gövdesi ve güvenli uçlarıyla küçük eller için en uygun kesim deneyimini sunan <strong>${t.title}</strong>, kreş ve anaokulu etkinliklerinin yardımcısıdır.</p>`
+    (t) => `<p>Hafif gövdesi ve güvenli uçlarıyla küçük eller için en uygun kesim deneyimini sunan <strong>${t.title}</strong>, kreş ve anaokulu etkinliklerinin yardımcısıdır.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, keskinliğini uzun süre koruyan paslanmaz çelik bıçakları ve parmakları yormayan özel sap yapısıyla hem okulda hem evde konforlu kullanım sağlar.</p>`,
+    (t) => `<p>Hassas kesimler ve yaratıcı kağıt işleri için ideal olan <strong>${t.title}</strong>, renkli tasarımıyla çocukların çalışma masalarına neşe katıyor.</p>`
   ],
   silgi: [
     (t) => `<p><strong>${t.title}</strong>, kağıt yüzeyine zarar vermeden temiz ve kalıntısız silme performansı sunan, okul ve ofis kullanımı için tasarlanmış kaliteli bir silgidir.</p>`,
-    (t) => `<p>Yumuşak dokusu sayesinde kağıdı yıpratmadan mükemmel silme deneyimi sunan <strong>${t.title}</strong>, her yaş grubu için idealdir.</p>`
+    (t) => `<p>Yumuşak dokusu sayesinde kağıdı yıpratmadan mükemmel silme deneyimi sunan <strong>${t.title}</strong>, her yaş grubu için idealdir.</p>`,
+    (t) => `<p>Toz bırakmayan (dust-free) özelliğiyle öne çıkan <strong>${t.title}</strong>, sınav dönemlerinde ve profesyonel çizimlerde temiz bir çalışma alanı sağlar.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, ergonomik formu ve üstün silme gücüyle yanlışları iz bırakmadan düzeltmenize yardımcı olan dayanıklı bir kırtasiye ürünüdür.</p>`
   ],
   kalemtiras: [
     (t) => `<p><strong>${t.title}</strong>, dayanıklı çelik bıçak sistemi sayesinde kalemlerinizin ucunu kırmadan pürüzsüzce açar. Ergonomik tasarımı ile pratik kullanım sunar.</p>`,
-    (t) => `<p>Hem standart hem de kalın boy kalemleri mükemmel bir açıyla sivrilten <strong>${t.title}</strong>, geniş atık haznesi ve sızdırmaz kapağıyla çanta dostu bir gerecidir.</p>`
+    (t) => `<p>Hem standart hem de kalın boy kalemleri mükemmel bir açıyla sivrilten <strong>${t.title}</strong>, geniş atık haznesi ve sızdırmaz kapağıyla çanta dostu bir gerecidir.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, keskin bıçağı ve kompakt tasarımıyla yazı ve resim çalışmalarınızda kalem ucunuzun her zaman ideal formda kalmasını sağlar.</p>`,
+    (t) => `<p>Okul çantalarının olmazsa olmazı <strong>${t.title}</strong>, kalem uçlarını israf etmeden açan hassas mekanizmasıyla uzun süreli kullanım sunar.</p>`
   ],
   cizimSeti: [
     (t) => `<p><strong>${t.title}</strong>, okul ve teknik çizim projelerinizde ihtiyaç duyduğunuz tüm materyalleri bir araya getiren, dayanıklı ve esnek yapıda bir çizim setidir.</p>`,
-    (t) => `<p>Geometri derslerinden teknik çizime kadar geniş bir kullanım alanı sunan <strong>${t.title}</strong>, kırılmaz esnek yapısıyla çanta içinde güvenle taşınabilir.</p>`
+    (t) => `<p>Geometri derslerinden teknik çizime kadar geniş bir kullanım alanı sunan <strong>${t.title}</strong>, kırılmaz esnek yapısıyla çanta içinde güvenle taşınabilir.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, matematik ve resim derslerinde ihtiyacınız olan tüm cetvel ve ölçüm araçlarını şık ve dayanıklı bir koruma kılıfı içinde sunar.</p>`,
+    (t) => `<p>Hassas ölçeklendirme ve net çizgiler için tasarlanan <strong>${t.title}</strong>, öğrencilerin ve teknik çizim yapanların vazgeçilmez yardımcısıdır.</p>`
   ],
   _default: [
     (t) => `<p><strong>${t.title}</strong>, ${t.brand} markasının kaliteli üretim standartlarıyla hazırlanmış, okul ve ofis kullanımına uygun çok yönlü bir kırtasiye ürünüdür.</p>`,
-    (t) => `<p>Günlük kullanımdan profesyonel projelere kadar geniş bir yelpazede çözüm sunan <strong>${t.title}</strong>, dayanıklı yapısı ve şık tasarımıyla öne çıkar.</p>`
+    (t) => `<p>Günlük kullanımdan profesyonel projelere kadar geniş bir yelpazede çözüm sunan <strong>${t.title}</strong>, dayanıklı yapısı ve şık tasarımıyla öne çıkar.</p>`,
+    (t) => `<p>Yüksek performans ve ergonomiyi bir araya getiren <strong>${t.title}</strong>, çalışma masanızın verimliliğini artıran modern bir yardımcıdır.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, dayanıklılığı ve estetik görünümüyle dikkat çeken, uzun ömürlü kullanım vadeden nitelikli bir kırtasiye gerecidir.</p>`
   ]
 };
 

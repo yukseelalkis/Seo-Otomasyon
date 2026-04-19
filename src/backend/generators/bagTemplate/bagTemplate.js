@@ -30,25 +30,34 @@ function detectBagSubType(facts) {
 const INTRO_POOLS = {
   sirt: [
     (t) => `<p><strong>${t.title}</strong>, öğrencilerin okul eşyalarını düzenli ve ergonomik biçimde taşıyabilmesi için ${t.brand} tarafından özel olarak tasarlanmış dayanıklı bir sırt çantasıdır.</p>`,
-    (t) => `<p>Günlük okul kullanımı için ideal olan <strong>${t.title}</strong>, geniş iç hacmi ve ergonomik sırt desteğiyle uzun süreli konforlu taşıma deneyimi sunar.</p>`
+    (t) => `<p>Günlük okul kullanımı için ideal olan <strong>${t.title}</strong>, geniş iç hacmi ve ergonomik sırt desteğiyle uzun süreli konforlu taşıma deneyimi sunar.</p>`,
+    (t) => `<p>Şık tasarımı ve fonksiyonel bölmeleriyle dikkat çeken <strong>${t.title}</strong>, hem okulda hem dışarıda her türlü ihtiyacınızı karşılayacak modern bir sırt çantasıdır.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, kaliteli malzeme yapısı ve omuz yükünü hafifleten özel askı sistemiyle yoğun okul günlerinde en büyük destekçiniz olacak.</p>`
   ],
   anaokulu: [
     (t) => `<p><strong>${t.title}</strong>, 3-6 yaş grubundaki çocukların okul eşyalarını düzenli ve konforlu biçimde taşıyabilmesi için özel olarak üretilmiştir. Çocuk dostu tasarımı ile hem kullanışlı hem de sevimli bir görünüm sunar.</p>`,
-    (t) => `<p>Küçük bedenlere uygun ergonomik yapısıyla <strong>${t.title}</strong>, anaokulu öğrencilerinin günlük eşyalarını güvenle taşımasını sağlar. Hafif ve dayanıklı tasarımı sayesinde çocuklar rahatlıkla kullanabilir.</p>`
+    (t) => `<p>Küçük bedenlere uygun ergonomik yapısıyla <strong>${t.title}</strong>, anaokulu öğrencilerinin günlük eşyalarını güvenle taşımasını sağlar. Hafif ve dayanıklı tasarımı sayesinde çocuklar rahatlıkla kullanabilir.</p>`,
+    (t) => `<p>Çocukların hayal dünyasını yansıtan canlı renkleri ve kolay açılıp kapanan fermuar yapısıyla <strong>${t.title}</strong>, anaokuluna ilk adımı atan minikler için ideal bir başlangıç çantasıdır.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, çocuklarınızın en sevdiği kahramanlarla süslenmiş, hem oyun hem de okul materyallerini bir arada tutan ergonomik ve eğlenceli bir tasarıma sahiptir.</p>`
   ],
   matara: [
     (t) => `<p>Dayanıklı ve yüksek kaliteli malzemeden üretilen <strong>${t.title}</strong>, BPA içermez, sağlığınız için tamamen güvenlidir ve kesinlikle koku veya tat yapmaz.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, gün boyunca sağlıklı su tüketimini kolaylaştıran, sızdırmaz kapağı ve ergonomik tasarımıyla okul, ofis ve spor için ideal bir mataradır.</p>`
+    (t) => `<p><strong>${t.title}</strong>, gün boyunca sağlıklı su tüketimini kolaylaştıran, sızdırmaz kapağı ve ergonomik tasarımıyla okul, ofis ve spor için ideal bir mataradır.</p>`,
+    (t) => `<p>MaviKalem güvencesiyle sunulan <strong>${t.title}</strong>, darbelere karşı dayanıklı gövdesi ve pratik içim sağlayan ağızlık yapısıyla her an yanınızda bulundurmanız gereken şık bir aksesuardır.</p>`,
+    (t) => `<p>Ilık veya soğuk içeceklerinizi güvenle taşımanıza olanak tanıyan <strong>${t.title}</strong>, sızdırmazlık garantisi ve modern estetiğiyle aktif yaşam tarzınıza mükemmel uyum sağlar.</p>`
   ],
   proje: [
     (t) => `<p>Özel tasarımlarınızı, resimlerinizi ve çalışmalarınızı güvenle taşımanız için üretilen <strong>${t.title}</strong>, fonksiyonelliği ve dayanıklılığı bir araya getiriyor.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, resim ve proje çalışmalarınızı darbelere karşı koruyarak güvenle taşımanızı sağlayan, özel dolgulu ve geniş hacimli bir çantadır.</p>`
+    (t) => `<p><strong>${t.title}</strong>, resim ve proje çalışmalarınızı darbelere karşı koruyarak güvenle taşımanızı sağlayan, özel dolgulu ve geniş hacimli bir çantadır.</p>`,
+    (t) => `<p>Geniş iç kapasitesi ve formunu koruyan sert dış yüzeyi sayesinde <strong>${t.title}</strong>, teknik çizimlerin ve büyük boyutlu kağıtların kırışmadan muhafaza edilmesi için tasarlanmıştır.</p>`
   ],
   beslenme: [
-    (t) => `<p><strong>${t.title}</strong>, çocuğunuzun yiyeceklerini taze ve hijyenik bir şekilde taşımasını sağlayan, yalıtımlı ve kolay temizlenebilir yapıya sahip pratik bir beslenme çantasıdır.</p>`
+    (t) => `<p><strong>${t.title}</strong>, çocuğunuzun yiyeceklerini taze ve hijyenik bir şekilde taşımasını sağlayan, yalıtımlı ve kolay temizlenebilir yapıya sahip pratik bir beslenme çantasıdır.</p>`,
+    (t) => `<p>Hem şık hem de fonksiyonel olan <strong>${t.title}</strong>, içindeki termal katman sayesinde ev yapımı öğünlerin ısısını koruyarak gün boyu tazelik sunar.</p>`
   ],
   kalemKutusu: [
-    (t) => `<p><strong>${t.title}</strong>, kalem ve kırtasiye malzemelerini düzenli bir şekilde muhafaza etmenizi sağlayan, dayanıklı ve şık tasarımlı bir kalem kutusudur.</p>`
+    (t) => `<p><strong>${t.title}</strong>, kalem ve kırtasiye malzemelerini düzenli bir şekilde muhafaza etmenizi sağlayan, dayanıklı ve şık tasarımlı bir kalem kutusudur.</p>`,
+    (t) => `<p>Geniş iç hacmi ve kaliteli fermuar sistemiyle öne çıkan <strong>${t.title}</strong>, okul masalarının en renkli ve düzenli parçası olmaya adaydır.</p>`
   ]
 };
 

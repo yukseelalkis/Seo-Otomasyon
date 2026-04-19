@@ -18,7 +18,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, AYT'de yüksek puan hedefleyen adaylar için geliştirilmiş, konuları derinlemesine işleyen ve soru çözme becerilerini güçlendiren stratejik bir hazırlık materyalidir. ${t.publisher} güvencesiyle sunulmuştur.</p>`,
   (t) => `<p><strong>${t.title}</strong>, üniversite hayallerine ulaşmak isteyen öğrenciler için AYT oturumuna özel olarak tasarlanmış, ${t.publisher} etiketiyle yayımlanmış nitelikli bir kaynaktır. İleri düzey konuları anlaşılır bir dille ele alır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, AYT müfredatının tüm kazanımlarını kapsayan ve adayların alan sınavında fark yaratmasını sağlayan, ${t.publisher} tarafından titizlikle hazırlanmış bir çalışma rehberidir.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, AYT sınavına hazırlanan adaylara ileri düzey konu kavrama ve soru çözme pratiği sunan, ${t.publisher} kalitesinde üretilmiş kapsamlı bir kaynaktır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, AYT sınavına hazırlanan adaylara ileri düzey konu kavrama ve soru çözme pratiği sunan, ${t.publisher} kalitesinde üretilmiş kapsamlı bir kaynaktır.</p>`,
+  (t) => `<p>Akademik kariyerinizin en önemli basamaklarından biri olan AYT sürecinde <strong>${t.title}</strong>, ${t.publisher} uzmanlığıyla hazırlanan içeriği sayesinde alan konularında uzmanlaşmanızı sağlayan profesyonel bir yol arkadaşıdır.</p>`,
+  (t) => `<p>${t.publisher} güvencesiyle sunulan <strong>${t.title}</strong>, AYT oturumunun gerektirdiği analitik derinliği ve soru çeşitliliğini adaylara kazandırmak için kurgulanmış nitelikli bir hazırlık materyalidir.</p>`,
+  (t) => `<p>Sınav stratejinizi güçlendiren <strong>${t.title}</strong>, AYT müfredatındaki kritik noktaları öne çıkaran yapısı ve ${t.publisher} kalitesiyle üniversite hedeflerinize emin adımlarla ilerlemenize yardımcı olur.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, alan yeterlilik testinde fark yaratmak isteyen adaylar için ${t.publisher} tarafından özel olarak geliştirilmiş, konuları mantıksal bir bütünlük içinde sunan ileri seviye bir eğitim kaynağıdır.</p>`
 ];
 
 const DETAIL_POOL = [

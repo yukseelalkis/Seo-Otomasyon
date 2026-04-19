@@ -17,7 +17,12 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, YDS ve YÖKDİL sınavlarına hazırlanan akademisyen, öğretmen ve yüksek lisans adayları için ${t.publisher} güvencesiyle üretilmiş stratejik bir kaynak kitaptır. Dilbilgisi, kelime bilgisi ve okuma becerilerini sistematik olarak geliştirmeyi hedefler.</p>`,
   (t) => `<p><strong>${t.title}</strong>, YDS sınavının tüm bölümlerini kapsayan ve adayların İngilizce yeterlilik seviyesini artırmaya yönelik tasarlanmış, ${t.publisher} kalitesinde bir hazırlık kaynağıdır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, yabancı dil sınavlarında başarıyı garantilemek isteyen adaylara, ${t.publisher} etiketiyle sunulan kapsamlı ve stratejik bir çalışma rehberidir. Akademik İngilizce'nin tüm yönlerini ele almaktadır.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, YDS sınavına sistematik bir yaklaşımla hazırlanmak isteyen adaylar için ${t.publisher} tarafından titizlikle oluşturulmuş nitelikli bir kaynaktır. Sınavın gerektirdiği dil yetkinliğini kazandırmaya odaklanır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, YDS sınavına sistematik bir yaklaşımla hazırlanmak isteyen adaylar için ${t.publisher} tarafından titizlikle oluşturulmuş nitelikli bir kaynaktır. Sınavın gerektirdiği dil yetkinliğini kazandırmaya odaklanır.</p>`,
+  (t) => `<p>Akademik hedeflerine ulaşmak için yabancı dil engeline takılmak istemeyen adayların tercihi olan <strong>${t.title}</strong>, ${t.publisher} uzmanlığıyla sınavın tüm dinamiklerini analiz eden profesyonel bir kaynaktır.</p>`,
+  (t) => `<p>${t.publisher} güvencesiyle sunulan <strong>${t.title}</strong>, YDS oturumunun gerektirdiği kelime ve gramer derinliğini adaylara kazandırmak için kurgulanmış nitelikli ve sonuç odaklı bir hazırlık materyalidir.</p>`,
+  (t) => `<p>Gelişmiş soru çözme teknikleriyle donatılan <strong>${t.title}</strong>, yabancı dil sınavlarındaki süreyi en verimli şekilde yönetmenize yardımcı olurken ${t.publisher} kalitesiyle dil yetkinliğinizi zirveye taşır.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, akademik İngilizce okumalarından kompleks çevirilere kadar YDS sınavının tüm zorluk seviyelerine uygun olarak ${t.publisher} tarafından geliştirilmiş kapsamlı bir eğitim materyalidir.</p>`,
+  (t) => `<p>Dil öğrenme sürecini sınav başarısına dönüştüren <strong>${t.title}</strong>, müfredat uyumlu yapısı ve akademik derinliği ile ${t.publisher} etiketi altında sunulan seçkin bir hazırlık rehberidir.</p>`
 ];
 
 const DETAIL_POOL = [

@@ -17,7 +17,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, ${t.author ? t.author + "'ın kaleminden çıkan, " : ""}edebiyat dünyasına değerli bir katkı sunan özgün bir yapıttır. Derin temaları ve güçlü karakter kurgusuyla okurun ilgisini ilk sayfadan itibaren yakalar.</p>`,
   (t) => `<p><strong>${t.title}</strong>, modern edebiyatın seçkin örneklerinden biri olarak kütüphanelerde yerini alan, içerik zenginliğiyle öne çıkan bir eserdir. ${t.publisher} güvencesiyle okuyucuya sunulmuştur.</p>`,
   (t) => `<p><strong>${t.title}</strong>, okuma alışkanlığını güçlendirmek ve entelektüel ufku genişletmek isteyen herkes için hazırlanmış etkili bir eserdir. Sade dili ve derin kurgusuyla okurun beğenisini kazanmaktadır.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, ${t.publisher} tarafından yayımlanan, edebiyatseverlerin kütüphanelerinde mutlaka bulunması gereken seçkin bir eserdir. Güçlü anlatım dili ve evrensel temaları ile okurlarına unutulmaz bir okuma deneyimi sunar.</p>`
+  (t) => `<p><strong>${t.title}</strong>, ${t.publisher} tarafından yayımlanan, edebiyatseverlerin kütüphanelerinde mutlaka bulunması gereken seçkin bir eserdir. Güçlü anlatım dili ve evrensel temaları ile okurlarına unutulmaz bir okuma deneyimi sunar.</p>`,
+  (t) => `<p>Edebiyatın büyüleyici dünyasına bir kapı aralayan <strong>${t.title}</strong>, ${t.publisher} etiketiyle sunulan ve okurun ruhuna dokunan derinlikli anlatımıyla öne çıkan değerli bir çalışmadır.</p>`,
+  (t) => `<p>${t.publisher} kalitesiyle kütüphanelere kazandırılan <strong>${t.title}</strong>, hem kurgusal derinliği hem de dilindeki estetik zenginlikle edebiyat tutkunlarının vazgeçilmezleri arasına girmeye adaydır.</p>`,
+  (t) => `<p>Düşünsel bir derinlik ve estetik bir keyif vadeden <strong>${t.title}</strong>, ${t.author ? t.author + " tarafından kurgulanan " : ""}ve ${t.publisher} tarafından titizlikle yayına hazırlanan nitelikli bir edebi eserdir.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, kelimelerin gücüyle örülmüş hikayesi ve ${t.publisher} güvencesiyle okurlara sunulan sürükleyici yapısıyla modern edebiyatın dikkat çeken örneklerinden biridir.</p>`
 ];
 
 const DETAIL_POOL = [

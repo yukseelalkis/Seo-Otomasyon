@@ -18,7 +18,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, LGS sınavında yüksek puan hedefleyen öğrenciler için stratejik bir hazırlık rehberidir. ${t.publisher} etiketiyle yayımlanan bu eser, MEB kazanımlarını eksiksiz kapsayan yapısıyla dikkat çekmektedir.</p>`,
   (t) => `<p><strong>${t.title}</strong>, 8. sınıf müfredatını temel alarak LGS'ye yönelik kapsamlı bir içerik sunan, ${t.publisher} kalitesinde üretilmiş başarılı bir kaynak kitaptır. Öğrencilerin konuları pekiştirmesini ve sınav pratiği kazanmasını sağlar.</p>`,
   (t) => `<p><strong>${t.title}</strong>, LGS sınavının yeni nesil soru mantığına uygun olarak hazırlanmış, öğrencilerin analitik düşünme becerilerini geliştiren kapsamlı bir çalışma kaynağıdır. ${t.publisher} tarafından titizlikle hazırlanmıştır.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, LGS'ye adım adım hazırlık sürecinde öğrencilerin yanında olan, konu tekrarından deneme sınavlarına kadar geniş bir içerik sunan güçlü bir kaynaktır. ${t.publisher} güvencesiyle yayımlanmıştır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, LGS'ye adım adım hazırlık sürecinde öğrencilerin yanında olan, konu tekrarından deneme sınavlarına kadar geniş bir içerik sunan güçlü bir kaynaktır. ${t.publisher} güvencesiyle yayımlanmıştır.</p>`,
+  (t) => `<p>Liselere giriş yolculuğunda 8. sınıf öğrencilerinin en güvenilir rehberi olan <strong>${t.title}</strong>, ${t.publisher} uzmanlığıyla hazırlanan soruları sayesinde LGS mantığını tam olarak kavramanıza yardımcı olur.</p>`,
+  (t) => `<p>${t.publisher} güvencesiyle sunulan <strong>${t.title}</strong>, adayların hem okul başarılarını pekiştiren hem de LGS oturumundaki yeni nesil becerilerini geliştirmek için kurgulanmış nitelikli bir hazırlık materyalidir.</p>`,
+  (t) => `<p>Sınav hazırlığını daha planlı hale getiren <strong>${t.title}</strong>, LGS müfredatındaki kritik noktaları öne çıkaran yapısı ve ${t.publisher} kalitesiyle hayalini kurduğunuz liseye giden yolda yanınızda yer alır.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, 8. sınıf düzeyindeki öğrencilerin sınav kaygısını yönetmelerini sağlayan ve soru çözme hızlarını artıran, ${t.publisher} imzalı nitelikli bir eğitim kaynağıdır.</p>`
 ];
 
 const DETAIL_POOL = [

@@ -18,7 +18,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, Atatürk'ün devrimcilik ve cumhuriyetçilik ilkelerini günümüz perspektifinden değerlendiren özgün bir çalışmadır. Milliyetçilik, halkçılık ve devletçilik gibi temel kavramları anlaşılır bir dille ele alır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, Atatürk düşünce sistemini ve Cumhuriyet'in kuruluş sürecini tarihsel belgeler ışığında inceleyen değerli bir kaynaktır. Modern Türkiye'nin fikri temellerini anlamak isteyen okurlar için bir başucu eseridir.</p>`,
   (t) => `<p><strong>${t.title}</strong>, Mustafa Kemal Atatürk'ün çağdaşlaşma vizyonunu, reformlarını ve toplumsal dönüşüm hedeflerini kapsamlı şekilde ele alan bir eserdir. Aydınlanmacı düşüncenin izleri bu eserde derinlemesine incelenmektedir.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, Atatürk'ün bilim, akıl ve çağdaşlık üzerine kurduğu düşünce sistemini okuyuculara aktaran, araştırma ve inceleme niteliğinde bir yapıttır. Cumhuriyet değerlerini anlamak isteyenler için önemli bir kaynaktır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, Atatürk'ün bilim, akıl ve çağdaşlık üzerine kurduğu düşünce sistemini okuyuculara aktaran, araştırma ve inceleme niteliğinde bir yapıttır. Cumhuriyet değerlerini anlamak isteyenler için önemli bir kaynaktır.</p>`,
+  (t) => `<p>Tarih sahnesinde modern Türkiye'nin temellerini atan vizyonu anlamak için <strong>${t.title}</strong>, okuyucuya zengin bir içerik ve derin tahliller sunuyor. Cumhuriyet'in kazanımlarını ve Atatürkçü düşünceyi merkeze alan bu çalışma, geçmişten geleceğe ışık tutuyor.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, Atatürk ilke ve inkılaplarının toplumsal ve siyasal izdüşümlerini tarafsız bir perspektifle ele alan nitelikli bir eserdir. Eserdeki tarihsel veriler, Cumhuriyet aydınlanmasını daha iyi kavramanıza yardımcı olur.</p>`,
+  (t) => `<p>Atatürk'ün "en büyük eserim" dediği Cumhuriyet'in fikri altyapısını ve gelişimini konu alan <strong>${t.title}</strong>, her kütüphanede bulunması gereken bir temel yapıttır. Yazarın akıcı anlatımı, karmaşık tarihsel süreçleri anlaşılır kılıyor.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, Mustafa Kemal Atatürk'ün çağdaşlık ve bağımsızlık ideallerini savunan, bu ideallerin güncel değerini vurgulayan ilham verici bir kitaptır. Türk toplumunun modernleşme serüvenini etkileyici bir dille özetler.</p>`
 ];
 
 const DETAIL_POOL = [

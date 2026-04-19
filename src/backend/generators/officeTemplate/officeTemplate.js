@@ -34,33 +34,46 @@ function detectOfficeSubType(facts) {
 // ============================================================
 const INTRO_POOLS = {
   hesapMakinesi: [
-    (t) => `<p>Günlük hesaplama işlemlerini hızlı ve hatasız gerçekleştirmek isteyenler için tasarlanan <strong>${t.title}</strong>, geniş ekranı ve ergonomik tuş yapısıyla ofis, muhasebe ve ticaret kullanımları için ideal bir çözümdür.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, büyük sayılarla çalışan profesyoneller için geliştirilmiş güvenilir bir hesaplama aracıdır. Net görüntü sunan ekranı ve hızlı tepki veren tuşlarıyla verimli bir çalışma deneyimi sağlar.</p>`
+    (t) => `<p>Günlük hesaplama işlemlerini hızlı ve hatasüz gerçekleştirmek isteyenler için tasarlanan <strong>${t.title}</strong>, geniş ekranı ve ergonomik tuş yapısıyla ofis, muhasebe ve ticaret kullanımları için ideal bir çözümdür.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, büyük sayılarla çalışan profesyoneller için geliştirilmiş güvenilir bir hesaplama aracıdır. Net görüntü sunan ekranı ve hızlı tepki veren tuşlarıyla verimli bir çalışma deneyimi sağlar.</p>`,
+    (t) => `<p>Karmaşık matematiksel işlemlerden günlük basit bütçe hesaplarına kadar her alanda yanınızda olan <strong>${t.title}</strong>, dayanıklı tasarımı ve uzun pil ömrüyle iş akışınızı kesintisiz sürdürmenizi sağlar.</p>`,
+    (t) => `<p>Masanızın üzerindeki en pratik yardımcınız <strong>${t.title}</strong>, kullanıcı dostu fonksiyonları ve okunaklı dijital ekranı sayesinde finansal süreçlerinizi daha yönetilebilir hale getirir.</p>`
   ],
   ajanda: [
     (t) => `<p>Toplantı notlarınızı, günlük planlarınızı ve proje takvimlerinizi düzenli tutmanız için tasarlanan <strong>${t.title}</strong>, profesyonel yaşamınızda zaman yönetiminin vazgeçilmez yardımcısıdır.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, iş ve kişisel planlamalarınızı tek bir noktada toparlayan, dayanıklı kapağı ve kaliteli sayfa yapısıyla uzun süreli kullanıma uygun bir not defteri / ajandadır.</p>`
+    (t) => `<p><strong>${t.title}</strong>, iş ve kişisel planlamalarınızı tek bir noktada toparlayan, dayanıklı kapağı ve kaliteli sayfa yapısıyla uzun süreli kullanıma uygun bir not defteri / ajandadır.</p>`,
+    (t) => `<p>Fikirlerinizi kağıda dökmek ve geleceğinizi planlamak için ideal olan <strong>${t.title}</strong>, şık kapak tasarımı ve pürüzsüz sayfa dokusuyla not almayı bir keyfe dönüştürüyor.</p>`,
+    (t) => `<p>Organizasyonel başarının anahtarı olan <strong>${t.title}</strong>, yapılandırılmış içeriği ve ergonomik boyutuyla hem ofiste hem de seyahatlerinizde yanınızdan ayırmayacağınız bir yol arkadaşıdır.</p>`
   ],
   postit: [
     (t) => `<p>Hızlı hatırlatmalar, görev listeleri ve anlık notlar için tasarlanan <strong>${t.title}</strong>, iz bırakmayan yapışkan teknolojisi ile her yüzeye güvenle yapıştırılabilir.</p>`,
-    (t) => `<p>Ofis masanızdan bilgisayar ekranınıza, buzdolabından ajandanıza kadar her yere pratikçe tutturabileceğiniz <strong>${t.title}</strong>, günlük organizasyonunuzun en pratik yardımcısıdır.</p>`
+    (t) => `<p>Ofis masanızdan bilgisayar ekranınıza, buzdolabından ajandanıza kadar her yere pratikçe tutturabileceğiniz <strong>${t.title}</strong>, günlük organizasyonunuzun en pratik yardımcısıdır.</p>`,
+    (t) => `<p>Önemli bilgileri göz önünde tutmanızı sağlayan canlı renkleriyle <strong>${t.title}</strong>, yaratıcı süreçlerde beyin fırtınalarınızın ve organizasyonel şemalarınızın başrolünde yer alır.</p>`,
+    (t) => `<p>Yazıldığı her yerde fark yaratan <strong>${t.title}</strong>, güçlü yapışkan formülü ve ideal boyutuyla unutmamanız gereken her detayı sizin için muhafaza eder.</p>`
   ],
   dosya: [
     (t) => `<p>Evraklarınızı düzenli, korunaklı ve kolay erişilebilir şekilde arşivlemek için tasarlanan <strong>${t.title}</strong>, A4 boyutundaki tüm belgelerinize mükemmel uyum sağlar.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, ofis ve kişisel evrak yönetiminde profesyonel düzen arayanlar için dayanıklı yapısı ve pratik mekanizmasıyla öne çıkan bir dosyalama çözümüdür.</p>`
+    (t) => `<p><strong>${t.title}</strong>, ofis ve kişisel evrak yönetiminde profesyonel düzen arayanlar için dayanıklı yapısı ve pratik mekanizmasıyla öne çıkan bir dosyalama çözümüdür.</p>`,
+    (t) => `<p>Belgelerinizin ömrünü uzatan ve karışıklığı önleyen <strong>${t.title}</strong>, modern dosyalama standartlarına uygun yapısıyla çalışma alanınıza profesyonel bir hava katar.</p>`,
+    (t) => `<p>Kurumsal kimliğinizi yansıtan ve evrak trafiğinizi organize eden <strong>${t.title}</strong>, sağlam sırt yapısı ve kolay etiketlenebilir alanlarıyla arşivlemeyi kolaylaştırır.</p>`
   ],
   prestijKalem: [
     (t) => `<p>İmza süreçlerine zarafet katan ve yazım deneyimini bir sanata dönüştüren <strong>${t.title}</strong>, profesyonel yaşamın en prestijli yazım aracıdır.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, ergonomik tutuşu, akıcı mürekkep beslemesi ve zarif tasarımıyla hem kişisel kullanım hem de hediye amacıyla ideal bir prestij kalemidir.</p>`
+    (t) => `<p><strong>${t.title}</strong>, ergonomik tutuşu, akıcı mürekkep beslemesi ve zarif tasarımıyla hem kişisel kullanım hem de hediye amacıyla ideal bir prestij kalemidir.</p>`,
+    (t) => `<p>Stilinizi çalışma masanıza taşıyan <strong>${t.title}</strong>, kusursuz mürekkep akışı ve dengeli gövdesiyle her kelimeye değer katan bir mühendislik harikasıdır.</p>`,
+    (t) => `<p>Özel anların ve kalıcı imzaların tanığı olan <strong>${t.title}</strong>, lüks detayları ve zamansız tasarımıyla nesiller boyu saklanacak nitelikli bir aksesuardır.</p>`
   ],
   bant: [
-    (t) => `<p>Paketleme, onarım ve etiketleme işlemlerinde güvenilir yapışma gücü sunan <strong>${t.title}</strong>, ofis ve ev kullanımı için vazgeçilmez bir yardımcıdır.</p>`
+    (t) => `<p>Paketleme, onarım ve etiketleme işlemlerinde güvenilir yapışma gücü sunan <strong>${t.title}</strong>, ofis ve ev kullanımı için vazgeçilmez bir yardımcıdır.</p>`,
+    (t) => `<p>Yüzeylerde güçlü bir tutuş sağlayan ve kolay uygulanabilen <strong>${t.title}</strong>, dayanıklı yapısıyla paketlerinizi ve belgelerinizi güvenle sabitler.</p>`
   ],
   zimba: [
-    (t) => `<p>Evrak birleştirme ve arşivleme süreçlerini hızlandıran <strong>${t.title}</strong>, sağlam mekanizması ve ergonomik tasarımıyla günlük ofis kullanımının olmazsa olmazıdır.</p>`
+    (t) => `<p>Evrak birleştirme ve arşivleme süreçlerini hızlandıran <strong>${t.title}</strong>, sağlam mekanizması ve ergonomik tasarımıyla günlük ofis kullanımının olmazsa olmazıdır.</p>`,
+    (t) => `<p>Güçlü delme ve zımbalama kapasitesiyle dikkat çeken <strong>${t.title}</strong>, raporlarınızı ve belgelerinizi tek hamlede düzenli bir dosya haline getirmenizi sağlar.</p>`
   ],
   genel: [
-    (t) => `<p><strong>${t.title}</strong>, ofis ve kişisel kullanım için ${t.brand} kalitesiyle üretilmiş pratik ve dayanıklı bir üründür.</p>`
+    (t) => `<p><strong>${t.title}</strong>, ofis ve kişisel kullanım için ${t.brand} kalitesiyle üretilmiş pratik ve dayanıklı bir üründür.</p>`,
+    (t) => `<p>MaviKalem güvencesiyle sunulan <strong>${t.title}</strong>, çalışma verimliliğinizi optimize etmek için tasarlanmış yüksek standartlı bir ofis materyalidir.</p>`
   ]
 };
 

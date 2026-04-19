@@ -17,7 +17,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}öğrencilerinin konuları daha iyi kavraması ve sınav performansını yükseltmesi için ${t.publisher} kalitesiyle üretilmiş başarılı bir yardımcı kitaptır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, güncel MEB müfredatına uygun olarak hazırlanmış, ${t.classInfo}öğrencilerinin akademik gelişimini destekleyen ve ${t.publisher} etiketiyle sunulan nitelikli bir eğitim kaynağıdır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}düzeyindeki öğrencilerin dönem içi konu takibi ve sınav hazırlığı için ${t.publisher} tarafından özenle oluşturulmuş pratik bir yardımcı kitaptır.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, ${t.publisher} güvencesiyle yayımlanan, ${t.classInfo}öğrencilerinin derslerine paralel olarak ilerleyebileceği kapsamlı bir eğitim kaynağıdır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, ${t.publisher} güvencesiyle yayımlanan, ${t.classInfo}öğrencilerinin derslerine paralel olarak ilerleyebileceği kapsamlı bir eğitim kaynağıdır.</p>`,
+  (t) => `<p>Eğitim hayatının ilk yıllarında öğrencilerin derslere olan ilgisini artıran <strong>${t.title}</strong>, ${t.publisher} kalitesiyle hazırlanan içeriği sayesinde ${t.classInfo}seviyesindeki konuları eğlenceli ve öğretici bir dille sunar.</p>`,
+  (t) => `<p>Öğrenmeyi kalıcı hale getiren <strong>${t.title}</strong>, ${t.classInfo}öğrencileri için hem okul sınavlarında yüksek puan almalarına yardımcı olur hem de ${t.publisher} güvencesiyle sağlam bir akademik temel oluşturur.</p>`,
+  (t) => `<p>Müfredatı adım adım takip eden yapısıyla <strong>${t.title}</strong>, ${t.classInfo}öğrencilerinin evdeki en büyük destekçisidir ve ${t.publisher} uzmanlığıyla konuları pekiştirmelerine olanak tanır.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}düzeyindeki öğrencilerin derslerdeki özgüvenini artıran, görsel ve teorik anlatımları birleştiren ${t.publisher} imzalı nitelikli bir yardımcı materyaldir.</p>`
 ];
 
 const DETAIL_POOL = [

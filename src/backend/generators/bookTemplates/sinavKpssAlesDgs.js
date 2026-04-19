@@ -29,7 +29,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, ${t.examLabel} sınavında başarılı olmak isteyen adaylara sistematik bir çalışma planı sunan, ${t.publisher} kalitesinde üretilmiş stratejik bir hazırlık kitabıdır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, memur adaylarının ve lisansüstü eğitim hedefleyenlerin ${t.examLabel} sınavında yüksek netlere ulaşması için ${t.publisher} tarafından titizlikle hazırlanmış etkili bir kaynaktır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, ${t.examLabel} müfredatının tüm konularını kapsayan ve adayların sınav performansını en üst düzeye çıkarmayı hedefleyen, ${t.publisher} etiketiyle yayımlanmış nitelikli bir çalışma materyalidir.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, ${t.examLabel} sınavına odaklanmış, konuları güncel soru trendleriyle uyumlu bir şekilde ele alan ve ${t.publisher} güvencesiyle sunulan kapsamlı bir kaynak kitaptır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, ${t.examLabel} sınavına odaklanmış, konuları güncel soru trendleriyle uyumlu bir şekilde ele alan ve ${t.publisher} güvencesiyle sunulan kapsamlı bir kaynak kitaptır.</p>`,
+  (t) => `<p>Kariyer basamaklarını hızla tırmanmak isteyen adaylar için <strong>${t.title}</strong>, ${t.examLabel} oturumunun gerektirdiği tüm teorik bilgi ve soru çözme pratiklerini ${t.publisher} uzmanlığıyla bir araya getiriyor.</p>`,
+  (t) => `<p>${t.publisher} güvencesiyle hazırlanan <strong>${t.title}</strong>, ${t.examLabel} hazırlık sürecinde adayların zaman yönetimi ve analitik düşünme becerilerini en üst seviyeye taşımak için kurgulanmış profesyonel bir eğitim materyalidir.</p>`,
+  (t) => `<p>Sınav yolculuğunuzda size rehberlik eden <strong>${t.title}</strong>, ${t.examLabel} müfredatındaki en güncel değişiklikleri yansıtan yapısı ve ${t.publisher} kalitesiyle başarı hedefinize odaklanmanızı sağlar.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, karmaşık konuları sade ve anlaşılır bir dille özetleyen, adayların ${t.examLabel} sınavındaki özgüvenini artıran ${t.publisher} imzalı nitelikli bir hazırlık rehberidir.</p>`
 ];
 
 const DETAIL_POOL = [

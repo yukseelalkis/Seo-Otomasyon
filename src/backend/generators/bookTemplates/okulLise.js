@@ -17,7 +17,11 @@ const INTRO_POOL = [
   (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}öğrencilerinin hem okul sınavlarına hem de üniversite sınavlarına sağlam bir temel oluşturması için ${t.publisher} kalitesiyle üretilmiş stratejik bir yardımcı kitaptır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, güncel MEB müfredatı doğrultusunda hazırlanmış, ${t.classInfo}düzeyindeki öğrencilerin konu hakimiyetini pekiştirmesini sağlayan ve ${t.publisher} etiketiyle sunulan başarılı bir kaynaktır.</p>`,
   (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}öğrencilerinin akademik gelişimini desteklemek ve üniversite sınavına güçlü bir altyapı oluşturmak için ${t.publisher} tarafından titizlikle oluşturulmuş kapsamlı bir eğitim kaynağıdır.</p>`,
-  (t) => `<p><strong>${t.title}</strong>, ${t.publisher} güvencesiyle yayımlanan, ${t.classInfo}müfredatına tam uyumlu içeriğiyle öğrencilerin hem okul hem de sınav başarısını artırmayı hedefleyen etkili bir yardımcı kitaptır.</p>`
+  (t) => `<p><strong>${t.title}</strong>, ${t.publisher} güvencesiyle yayımlanan, ${t.classInfo}müfredatına tam uyumlu içeriğiyle öğrencilerin hem okul hem de sınav başarısını artırmayı hedefleyen etkili bir yardımcı kitaptır.</p>`,
+  (t) => `<p>Lise eğitiminin zorlu maratonunda öğrencilerin en büyük yardımcısı olan <strong>${t.title}</strong>, ${t.publisher} uzmanlığıyla hazırlanan içeriği sayesinde ${t.classInfo}seviyesindeki konuların tam olarak pekişmesini sağlar.</p>`,
+  (t) => `<p>${t.publisher} etiketiyle sunulan <strong>${t.title}</strong>, ${t.classInfo}öğrencileri için hem okul yazılılarına hazırlık hem de uzun vadeli sınav başarısı için kurgulanmış nitelikli bir rehber niteliğindedir.</p>`,
+  (t) => `<p>Öğrencilerin kavramsal öğrenmesini destekleyen <strong>${t.title}</strong>, ${t.classInfo}müfredatını adım adım işleyen yapısı ve ${t.publisher} güvencesiyle eğitim hayatınıza değer katan bir kaynaktır.</p>`,
+  (t) => `<p><strong>${t.title}</strong>, ${t.classInfo}düzeyindeki akademik hedeflere ulaşmak isteyenler için ${t.publisher} tarafından özel olarak geliştirilmiş, konuları mantıksal bir çerçevede ele alan bir eğitim materyalidir.</p>`
 ];
 
 const DETAIL_POOL = [

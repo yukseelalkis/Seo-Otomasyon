@@ -32,30 +32,43 @@ function detectArtSubType(facts) {
 const INTRO_POOLS = {
   boya: [
     (t) => `<p>Sanat eserlerinizde profesyonel bir derinlik ve canlılık arıyorsanız, <strong>${t.title}</strong> tam size göre. Yüksek pigment yoğunluğu ve mükemmel ışık haslığı ile eserlerinizin yıllar boyu ilk günkü parlaklığını korumasını sağlar.</p>`,
-    (t) => `<p>Yaratıcılığınızı sınır tanımadan tuvale yansıtmanıza olanak tanıyan <strong>${t.title}</strong>, zengin renk skalası ve akışkan yapısıyla sanatçıların favorisidir. Karıştırılabilir yapısı sayesinde hayalinizdeki ara tonları kolayca elde edebilirsiniz.</p>`
+    (t) => `<p>Yaratıcılığınızı sınır tanımadan tuvale yansıtmanıza olanak tanıyan <strong>${t.title}</strong>, zengin renk skalası ve akışkan yapısıyla sanatçıların favorisidir. Karıştırılabilir yapısı sayesinde hayalinizdeki ara tonları kolayca elde edebilirsiniz.</p>`,
+    (t) => `<p>Dokusu ve örtücülüğü ile sanat çalışmalarınıza yeni bir boyut kazandıran <strong>${t.title}</strong>, profesyonel standartlardaki pigment yapısıyla her fırça darbesinde fark yaratır.</p>`,
+    (t) => `<p>Geleneksel ve modern teknikleri bir araya getiren <strong>${t.title}</strong>, üstün renk geçişleri sağlayan formülüyle hem tuval üzerinde hem de farklı yüzeylerde kusursuz sonuçlar vadediyor.</p>`
   ],
   fircaKalem: [
     (t) => `<p>Kağıt ve karton üzerinde çizim yapmayı bir sanata dönüştüren <strong>${t.title}</strong>, esnek fırça ucu sayesinde hem ince detayları hem de geniş alanları tek kalemle boyamanıza olanak tanır.</p>`,
-    (t) => `<p>Modern kaligrafi, lettering ve illüstrasyon projelerinde profesyonel bir kontrol sunan <strong>${t.title}</strong>, basınca duyarlı esnek ucu ile değişken çizgi kalınlığı elde etmenizi sağlar.</p>`
+    (t) => `<p>Modern kaligrafi, lettering ve illüstrasyon projelerinde profesyonel bir kontrol sunan <strong>${t.title}</strong>, basınca duyarlı esnek ucu ile değişken çizgi kalınlığı elde etmenizi sağlar.</p>`,
+    (t) => `<p>Sanatsal dışavurumun en pratik araçlarından biri olan <strong>${t.title}</strong>, akışkan mürekkebi ve formunu koruyan fırça ucuyla yaratıcı süreçlerinizi daha akıcı hale getirir.</p>`,
+    (t) => `<p>Hem hobi çalışmalarında hem de profesyonel illüstrasyonlarda fark yaratan <strong>${t.title}</strong>, lebaleb renk yoğunluğu ve ergonomik tasarımıyla elinizin doğal bir uzantısı haline gelecek.</p>`
   ],
   firca: [
     (t) => `<p>Hassas vuruşlar ve kontrollü bir boyama deneyimi için tasarlanan <strong>${t.title}</strong>, yüksek boya tutma kapasitesi ile sanatsal süreçlerinizi daha akıcı hale getirir. Ergonomik sap tasarımı uzun süreli çalışmalarda el konforunuzu korur.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, kaliteli kıl yapısı sayesinde yüzeyde fırça izi bırakmadan pürüzsüz geçişler yapmanızı sağlar. Hem detay çalışmalarında hem de geniş yüzeylerde profesyonel sonuçlar sunar.</p>`
+    (t) => `<p><strong>${t.title}</strong>, kaliteli kıl yapısı sayesinde yüzeyde fırça izi bırakmadan pürüzsüz geçişler yapmanızı sağlar. Hem detay çalışmalarında hem de geniş yüzeylerde profesyonel sonuçlar sunar.</p>`,
+    (t) => `<p>Farklı tekniklere kolayca uyum sağlayan <strong>${t.title}</strong>, esnek kıl yapısı ve dayanıklı gövdesiyle her sanatsal aşamada yanınızda olan güvenilir bir yardımcıdır.</p>`,
+    (t) => `<p>Boyanın yüzeye homojen yayılmasını sağlayan <strong>${t.title}</strong>, profesyonel sanatçıların hassas detay ve geniş alan boyama ihtiyaçları için özel olarak geliştirilmiştir.</p>`
   ],
   kagit: [
     (t) => `<p>Sanatınızın temeli olan kağıt kalitesi, eserin kaderini belirler. <strong>${t.title}</strong>, yüksek gramajı ve emici dokusuyla ıslak tekniklerin deformasyon yapmadan uygulanmasına imkan tanır.</p>`,
-    (t) => `<p>Dokulu yüzey yapısıyla pigmentlerin kağıda tutunmasını maksimize eden <strong>${t.title}</strong>, özellikle eskiz ve suluboya çalışmaları için sanatçı standartlarında üretilmiştir.</p>`
+    (t) => `<p>Dokulu yüzey yapısıyla pigmentlerin kağıda tutunmasını maksimize eden <strong>${t.title}</strong>, özellikle eskiz ve suluboya çalışmaları için sanatçı standartlarında üretilmiştir.</p>`,
+    (t) => `<p>Asitsiz yapısıyla eserlerinizin yıllar boyu sararmasını önleyen <strong>${t.title}</strong>, profesyonel sunumlar ve kalıcı sanat projeleri için ideal bir zemine sahiptir.</p>`,
+    (t) => `<p>Yaratıcılığınızın en saf haliyle buluştuğu <strong>${t.title}</strong>, dayanıklı yüzeyi ve estetik dokusuyla her türlü sanatsal disipline ev sahipliği yapar.</p>`
   ],
   kil: [
     (t) => `<p>Üç boyutlu tasarımlarınıza can veren <strong>${t.title}</strong>, pürüzsüz dokusu ve kolay şekil alan yapısıyla hem profesyonel heykeltıraşlar hem de hobi tutkunları için idealdir.</p>`,
-    (t) => `<p><strong>${t.title}</strong>, hava ile kuruyan özel formülü sayesinde fırınlama gerektirmeden kalıcı objeler üretmenizi sağlar. Kuruduktan sonra boyanabilir yüzeyi ile sanatsal dokunuşlarınıza açıktır.</p>`
+    (t) => `<p><strong>${t.title}</strong>, hava ile kuruyan özel formülü sayesinde fırınlama gerektirmeden kalıcı objeler üretmenizi sağlar. Kuruduktan sonra boyanabilir yüzeyi ile sanatsal dokunuşlarınıza açıktır.</p>`,
+    (t) => `<p>Modelaj ve heykel çalışmalarında sınırsız özgürlük tanıyan <strong>${t.title}</strong>, elden ve çalışma yüzeyinden kolayca temizlenebilen yapısıyla keyifli bir üretim süreci sunar.</p>`,
+    (t) => `<p>İnce detayları işlemenize olanak tanıyan esnek yapısıyla <strong>${t.title}</strong>, hem çocukların motor becerilerini geliştiren hem de yetişkinlerin sanatsal vizyonunu yansıtan nitelikli bir materyaldir.</p>`
   ],
   kalem: [
     (t) => `<p>İnce çizgiler, teknik detaylar ve güçlü karakterler için <strong>${t.title}</strong> sanatçıların en büyük yardımcısıdır. Akmayan mürekkep yapısı ve dayanıklı ucuyla illüstratörlerin ve tasarımcıların vazgeçilmezidir.</p>`,
-    (t) => `<p>Kaligrafi, eskiz veya detay çizimlerinde profesyonel bir kontrol sunan <strong>${t.title}</strong>, ergonomik gövdesiyle yaratıcı süreçlerinizi keyfe dönüştürür.</p>`
+    (t) => `<p>Kaligrafi, eskiz veya detay çizimlerinde profesyonel bir kontrol sunan <strong>${t.title}</strong>, ergonomik gövdesiyle yaratıcı süreçlerinizi keyfe dönüştürür.</p>`,
+    (t) => `<p>Hassas teknik çizimlerden serbest eskizlere kadar geniş bir yelpazede performans sunan <strong>${t.title}</strong>, mürekkep kalitesi ve uç dayanıklılığı ile standartları belirliyor.</p>`,
+    (t) => `<p>Fikirlerinizi kağıda en saf haliyle yansıtan <strong>${t.title}</strong>, dağılmayan yapısı ve akıcı yazım hissiyle tasarım süreçlerinizin en verimli parçası olacak.</p>`
   ],
   genel: [
-    (t) => `<p>Sanatsal projelerinize değer katan <strong>${t.title}</strong>, yüksek kalite standartları ve sanatçı odaklı tasarımıyla MaviKalem güvencesiyle sunulmaktadır.</p>`
+    (t) => `<p>Sanatsal projelerinize değer katan <strong>${t.title}</strong>, yüksek kalite standartları ve sanatçı odaklı tasarımıyla MaviKalem güvencesiyle sunulmaktadır.</p>`,
+    (t) => `<p><strong>${t.title}</strong>, yaratıcılığınızı besleyen fonksiyonel özellikleri ve dayanıklı yapısıyla sanatsal çalışmalarınızda fark yaratacak nitelikli bir üründür.</p>`
   ]
 };
 

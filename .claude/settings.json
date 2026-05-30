@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Glob(**)",
+      "Grep(**)",
+
+      "Edit(src/**)",
+      "Edit(app/**)",
+      "Edit(docs/**)",
+      "Edit(scripts/**)",
+      "Edit(.claude/**)",
+      "Edit(CLAUDE.md)",
+      "Edit(README.md)",
+      "Edit(ISSUES.md)",
+      "Edit(ARCHITECTURE.md)",
+      "Edit(package.json)",
+      "Edit(tsconfig.json)",
+      "Edit(.gitignore)",
+      "Edit(.mcp.json)",
+
+      "Write(src/**)",
+      "Write(app/**)",
+      "Write(docs/**)",
+      "Write(scripts/**)",
+      "Write(.claude/**)",
+      "Write(data/output/**)",
+
+      "Bash(npm install)",
+      "Bash(npm i *)",
+      "Bash(npm run *)",
+      "Bash(npm test*)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(tsc*)",
+      "Bash(jq *)",
+
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git show*)",
+
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(echo *)",
+      "Bash(mkdir *)",
+      "Bash(pwd)",
+      "Bash(which *)",
+      "Bash(find *)",
+
+      "WebFetch(domain:docs.claude.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:developers.google.com)",
+      "WebFetch(domain:schema.org)",
+      "WebFetch(domain:www.mavikalem.tr)"
+    ],
+
+    "ask": [
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git checkout*)",
+      "Bash(git merge*)",
+      "Bash(git stash*)",
+      "Bash(git pull*)",
+      "Bash(git rebase*)",
+
+      "Bash(rm *)",
+      "Bash(mv *)",
+
+      "Write(.env*)",
+      "Edit(.env*)",
+      "Write(CLAUDE.md)",
+      "Edit(CLAUDE.md)"
+    ],
+
+    "deny": [
+      "Read(.env)",
+      "Read(.env.production)",
+      "Read(.env.local)",
+      "Read(.env.staging)",
+      "Read(.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/.aws/credentials)",
+      "Read(**/.ssh/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.p12)",
+      "Read(**/service-account*.json)",
+      "Read(**/gcp-key*.json)",
+
+      "Bash(rm -rf *)",
+      "Bash(rm -rf /*)",
+      "Bash(sudo *)",
+
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -fd*)",
+
+      "Bash(*DROP DATABASE*)",
+      "Bash(*DROP TABLE*)",
+      "Bash(*DROP SCHEMA*)",
+      "Bash(*TRUNCATE*)",
+      "Bash(*DELETE FROM*)",
+
+      "Bash(psql*DROP*)",
+      "Bash(psql*TRUNCATE*)",
+      "Bash(psql*DELETE*)",
+
+      "Bash(supabase db reset*)",
+      "Bash(supabase db remote commit*)",
+      "Bash(npx supabase db reset*)",
+
+      "Bash(curl *| sh*)",
+      "Bash(wget *| sh*)",
+      "Bash(curl *| bash*)",
+      "Bash(wget *| bash*)"
+    ]
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/block-dangerous-bash.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/protect-env.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.claude/hooks/format-on-save.sh"
+          }
+        ]
+      }
+    ]
+  },
+
+  "outputStyle": "terse",
+
+  "statusLine": {
+    "type": "command",
+    "command": "${CLAUDE_PROJECT_DIR}/.claude/statusline.sh"
+  },
+
+  "env": {
+    "NODE_ENV": "development"
+  }
+}

@@ -1,0 +1,50 @@
+# ============================================
+# AŞAĞIDAKİ SATIRLARI MEVCUT .gitignore DOSYANIN
+# ALTINA EKLE. Üzerine yazma — mevcut girişlerin
+# (node_modules/, .env, data/output/, *.log, .DS_Store)
+# zaten korunsun.
+# ============================================
+
+# --- Env varyantları (mevcut .env satırın zaten var) ---
+.env.*
+!.env.example
+
+# --- Claude Code kişisel dosyalar ---
+CLAUDE.local.md
+.claude/settings.local.json
+.claude/.local/
+.claude.local/
+
+# --- Secrets / credentials (savunma katmanı) ---
+**/secrets/**
+**/credentials
+*.pem
+*.p12
+service-account*.json
+gcp-key*.json
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS (mevcut .DS_Store satırın var, bu Windows için) ---
+Thumbs.db
+ehthumbs.db
+
+# --- Build / output ---
+dist/
+build/
+.next/
+out/
+coverage/
+.nyc_output/
+.turbo/
+*.tsbuildinfo
+
+# --- Test / cache ---
+.cache/
+.parcel-cache/
+.eslintcache

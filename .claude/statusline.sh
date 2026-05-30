@@ -1,0 +1,1 @@
+"statusLine": { "type": "command", "command": "${CLAUDE_PROJECT_DIR}/.claude/statusline.sh" }

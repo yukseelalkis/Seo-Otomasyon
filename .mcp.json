@@ -1,0 +1,34 @@
+{
+  "_comment": "Bu proje icin MCP sunucu yapilandirmasi. Sucraseunci asagidaki _examples bolumunden bir orneği kopyalayip mcpServers altina yapistir, Claude Code'u yeniden baslat, onay ver. Tum repo aciligina herkese sunulur (proje-seviyesi). Sadece sana ozel sunucular icin ~/.claude.json (kullanici seviyesi) kullan.",
+
+  "_examples": {
+    "context7": {
+      "_note": "Guncel dokumantasyon araması. Next.js, IdeaSoft API rehberleri, schema.org spec gibi seyler icin. Iyi baslangic.",
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp@latest"]
+    },
+
+    "postgres": {
+      "_note": "Supabase'e gecince ekle. Read-only baglanti onerilir. Faz 1'de gerekmiyor.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://user:pass@host:5432/db?sslmode=require"]
+    },
+
+    "filesystem": {
+      "_note": "Sandbox disindaki belirli klasorlere erisim. Coğunlukla gereksiz — Claude Code zaten repo'yu okur.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/extra/dir"]
+    },
+
+    "github": {
+      "_note": "Issue, PR, gist islemleri. GITHUB_PERSONAL_ACCESS_TOKEN env'de olmali.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    }
+  },
+
+  "mcpServers": {}
+}

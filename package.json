@@ -1,9 +1,20 @@
 {
+  "name": "seo-otomasyon",
+  "version": "1.0.0",
+  "description": "MaviKalem SEO Ürün Açıklama Otomasyon Aracı",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "generate": "node src/backend/index.js"
+  },
   "dependencies": {
     "axios": "^1.13.6",
     "cheerio": "^1.2.0",
     "dotenv": "^17.3.1",
     "exceljs": "^4.4.0",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0"
   }
 }

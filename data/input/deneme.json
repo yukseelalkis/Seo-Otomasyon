@@ -1,0 +1,42 @@
+[
+  {
+    "StokKodu": "CSO-AX12B",
+    "UrunAdi": "Casio AX-12B Hesap Makinesi 12 Hane",
+    "Marka": "Casio",
+    "Kategori": "Hesap Makinesi",
+    "AnaKategori": "Ofis",
+    "AltKategori": "Hesap Makinesi"
+  },
+  {
+    "StokKodu": "GN-AJN-A5",
+    "UrunAdi": "Gıpta Notes PP Kapak A5 Ajanda 120 Yaprak",
+    "Marka": "Gıpta",
+    "Kategori": "Ajanda",
+    "AnaKategori": "Ofis",
+    "AltKategori": "Ajanda"
+  },
+  {
+    "StokKodu": "LEI-TLD-5",
+    "UrunAdi": "Leitz 4100 Telli Dosya 50li Paket Mavi",
+    "Marka": "Leitz",
+    "Kategori": "Telli Dosya",
+    "AnaKategori": "Ofis",
+    "AltKategori": "Dosya"
+  },
+  {
+    "StokKodu": "3M-POST-76",
+    "UrunAdi": "3M Post-it 654 Yapışkan Not Kağıdı 76x76mm Sarı 100 Yaprak",
+    "Marka": "3M",
+    "Kategori": "Yapışkan Not",
+    "AnaKategori": "Ofis",
+    "AltKategori": "Post-it"
+  },
+  {
+    "StokKodu": "PRK-DKM-01",
+    "UrunAdi": "Parker IM Dolma Kalem Mat Siyah GT M Uç",
+    "Marka": "Parker",
+    "Kategori": "Dolma Kalem",
+    "AnaKategori": "Ofis",
+    "AltKategori": "Prestij Kalem"
+  }
+]
